@@ -204,6 +204,7 @@ D:\code\of_v0.9.8_vs_release\addons\ofxDatGui\src\themes;%(AdditionalIncludeDire
     <ClCompile Include="..\..\..\of_v0.9.8_vs_release\addons\ofxDatGui\src\ofxDatGui.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\ofApp.cpp" />
+    <ClCompile Include="src\particula.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\of_v0.9.8_vs_release\addons\ofxDatGui\src\components\ofxDatGui2dPad.h" />
@@ -228,6 +229,7 @@ D:\code\of_v0.9.8_vs_release\addons\ofxDatGui\src\themes;%(AdditionalIncludeDire
     <ClInclude Include="..\..\..\of_v0.9.8_vs_release\addons\ofxDatGui\src\themes\ofxDatGuiTheme.h" />
     <ClInclude Include="..\..\..\of_v0.9.8_vs_release\addons\ofxDatGui\src\themes\ofxDatGuiThemes.h" />
     <ClInclude Include="src\ofApp.h" />
+    <ClInclude Include="src\particula.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(OF_ROOT)\libs\openFrameworksCompiled\project\vs\openframeworksLib.vcxproj">

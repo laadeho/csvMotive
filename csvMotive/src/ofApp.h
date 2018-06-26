@@ -5,13 +5,16 @@
 #include <winsock2.h>
 #include <vector>
 #include "ofxDatGui.h"
+#include "particula.h"
 
 class ofApp : public ofBaseApp {
 
 public:
 	void setup();
 	void update();
+	void updateVal();
 	void draw();
+	void updateMesh();
 
 	void keyPressed(int key);
 	void keyReleased(int key);
@@ -19,8 +22,8 @@ public:
 	
 	void windowResized(int w, int h);
 
-	//void coordenadas();
-
+	Particula part;
+		
 	void analizaCSV();
 
 	ofFile editado;
@@ -59,13 +62,23 @@ public:
 
 	bool analiza = true;		
 	int lineaAnalisis = 7;		// Slider inicio anim
-	int saltoLinea = 2;			// Velocidad / salto lectura
+	int saltoLinea = 1;			// Velocidad / salto lectura
 	float escala = 1.0f;		// Slider flotante
 
 	ofBuffer buffer;
 
 	/// CAMARA
 	ofEasyCam cam;
+	ofVec3f posCam;
 
+	/// LUCES
+	ofLight pointLight, light;
+
+	/// MESH
+	vector<ofVec3f> offsets;
+	ofMesh mesh, meshLines;
+
+	/// DEBUIG
 	bool debug = true;
+
 };

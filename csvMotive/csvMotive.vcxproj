@@ -202,6 +202,7 @@ D:\code\of_v0.9.8_vs_release\addons\ofxDatGui\src\themes;%(AdditionalIncludeDire
     <ClCompile Include="..\..\..\of_v0.9.8_vs_release\addons\ofxDatGui\src\core\ofxDatGuiComponent.cpp" />
     <ClCompile Include="..\..\..\of_v0.9.8_vs_release\addons\ofxDatGui\src\libs\ofxSmartFont\ofxSmartFont.cpp" />
     <ClCompile Include="..\..\..\of_v0.9.8_vs_release\addons\ofxDatGui\src\ofxDatGui.cpp" />
+    <ClCompile Include="Analiza.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\ofApp.cpp" />
     <ClCompile Include="src\particula.cpp" />
@@ -228,6 +229,7 @@ D:\code\of_v0.9.8_vs_release\addons\ofxDatGui\src\themes;%(AdditionalIncludeDire
     <ClInclude Include="..\..\..\of_v0.9.8_vs_release\addons\ofxDatGui\src\ofxDatGui.h" />
     <ClInclude Include="..\..\..\of_v0.9.8_vs_release\addons\ofxDatGui\src\themes\ofxDatGuiTheme.h" />
     <ClInclude Include="..\..\..\of_v0.9.8_vs_release\addons\ofxDatGui\src\themes\ofxDatGuiThemes.h" />
+    <ClInclude Include="Analiza.h" />
     <ClInclude Include="src\ofApp.h" />
     <ClInclude Include="src\particula.h" />
   </ItemGroup>

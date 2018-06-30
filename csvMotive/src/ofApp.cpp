@@ -2,9 +2,10 @@
 int tiempo = 0;
 //--------------------------------------------------------------
 void ofApp::setup(){
+	/*
 	part = Particula(ofVec3f(0, 0, 0), 5);
-
 	part.setup();
+	*/
 
 	analizaCSV();
 	setupGUI();
@@ -29,16 +30,16 @@ void ofApp::setup(){
 		offsets.push_back(ofVec3f(ofRandom(0, 100000), ofRandom(0, 100000), ofRandom(0, 100000)));
 	}
 	
-		for (int i = 0; i < markerPos.size() - 2; i += 3) {
-			mesh.addIndex(i);
-			mesh.addIndex(i + 1);
-			mesh.addIndex(i + 2);
-			meshLines.addIndex(i);
-			/*
-			meshLines.addIndex(i + 1);
-			meshLines.addIndex(i + 2);
-			*/
-		}
+	for (int i = 0; i < markerPos.size() - 2; i += 3) {
+		mesh.addIndex(i);
+		mesh.addIndex(i + 1);
+		mesh.addIndex(i + 2);
+		meshLines.addIndex(i);
+		/*
+		meshLines.addIndex(i + 1);
+		meshLines.addIndex(i + 2);
+		*/
+	}
 	
 	/// CAMARA
 	cam.disableMouseInput();
@@ -180,6 +181,9 @@ void ofApp::setupGUI() {	////////////// OFXDATGUI
 	gui->addLabel(": : : C  O  N  F  I  G  U  R  A  D  O  R : : :");
 
 	ofxDatGuiFolder* guiDatos = gui->addFolder(":: V I S U A L I Z A R ::", ofColor::blue);
+	guiDatos->addToggle("PARTICULAS")->setChecked(false);
+	guiDatos->addToggle("MESH")->setChecked(false);
+	guiDatos->addToggle("MARKER SPHERE")->setChecked(false);
 	guiDatos->addToggle("MARKER")->setChecked(false);
 	guiDatos->addToggle("MARKER RIGID")->setChecked(false);
 	guiDatos->addToggle("MARKER BONE")->setChecked(false);
@@ -197,16 +201,66 @@ void ofApp::setupGUI() {	////////////// OFXDATGUI
 	/// GUI A MOSTRAR AL INICIO /////////////////////////
 }
 
+bool checkVive(Particula &p) {
+	return p.muere;
+}
+
 //--------------------------------------------------------------
 void ofApp::update() {
-	//ofSetFrameRate(30);
-	part.update();
+	for (int i = 0; i < parts.size(); i++) {
+		parts[i].update();
+		parts[i].applyForce(ofVec3f(0, 0.1, 0));
+		//if (!parts[i].vive) {
+			//Particula p = parts[i];
+			//parts.pop_back();
+			//parts.clear();
+			//delete parts[i];
+		//}
+	}
 
+	/*	
+	vector<Particula>::iterator itP = parts.begin();
+	for (; itP != parts.end(); ++itP) {
+		if (!(*itP).vive) {
+			parts.erase(itP);
+		}
+	}
+	*/
+	//vector<Particula>::iterator itP = parts.;
+	ofRemove(parts, checkVive);
+
+	/*
+	bool partVive(Particula p) {
+		return !p.vive;
+	}
+	*/
+//	ofRemove(parts, partVive);
+
+	
+
+	/*for (size_t i = 0; i < parts.size(); i++) {
+		Particula p = parts[i];
+		p.update();
+		if (!p.vive) {
+			parts.cl;
+		}
+		*/
+
+		/*
+		parts[i].update();
+		if (!parts[i].vive) {
+			//Particula p = parts[i];
+			parts.pop_back();
+		}
+		
+	}
+	*/
 	tiempo = int(ofGetElapsedTimef());
-
+	/*
 	std::stringstream strm;
 	strm << "fps: " << ofGetFrameRate();
 	ofSetWindowTitle(strm.str());
+	*/
 
 	updateVal();
 	updateMesh();	
@@ -226,7 +280,7 @@ void ofApp::update() {
 	/// CAMARA
 	cam.setPosition(posCam);
 	cam.setTarget(ofVec3f(0, 150, 0));
-	posCam = ofVec3f(sin(ofGetElapsedTimeMillis()*.0001)*1000, 165, cos(ofGetElapsedTimeMillis()*.0001) * 1000);
+	posCam = ofVec3f(sin(ofGetElapsedTimeMillis()*.0001)*distCam, 165, cos(ofGetElapsedTimeMillis()*.0001) * distCam);
 }
 
 //--------------------------------------------------------------
@@ -435,49 +489,18 @@ void ofApp::draw() {
 	ofBackground(0);
 
 	ofEnableDepthTest();
-	cam.begin();
 
 	ofEnableLighting();
 	pointLight.enable();
+
 	light.enable();
+	cam.begin();
 
-	if (!dibujaMarker) {
-		ofSetColor(200);
+	if (dibujaMarker) {
+		ofSetColor(255);
 		ofFill();
-
-		//ofSetIcoSphereResolution(int(ofMap(ofGetMouseX(),0,ofGetWindowWidth(),1,5)));
-		ofSetIcoSphereResolution(3);
-
 		for (int i = 0; i < markerPos.size(); i++) {
-			//ofDrawEllipse(markerPos[i], 5, 5);
-			//ofDrawBox(markerPos[i], 15);
-			//ofDrawArrow(markerPos[i], markerPos[i]*1.1, 15);
-			ofSetColor(200);
-			ofFill();
-			//ofDrawIcoSphere(markerPos[i], 15);
-			ofSetColor(50);
-			ofNoFill();
-			ofPushMatrix();
-			/*
-			ofTranslate(markerPos[i]);
-			ofRotateX(ofGetElapsedTimeMillis()*.05);
-			ofRotateY(ofGetElapsedTimeMillis()*.025);
-			ofDrawIcoSphere(ofPoint(0, 0, 0), 17);
-			*/
-			part = Particula(markerPos[i], 5);
-
-			ofPopMatrix();
-
-			/*
-			ofSetColor(0, 50);
-			ofNoFill();
-			if (i % 2 == 0) {
-				//ofDrawEllipse(markerPos[i], 5, 5);
-				ofDrawSphere(markerPos[i], 20);
-			}
-			else {
-				ofDrawBox(markerPos[i],20);
-			}*/
+			ofDrawEllipse(markerPos[i], 5, 5);
 		}
 	}
 	if (dibujaRigidMarker) {
@@ -494,7 +517,6 @@ void ofApp::draw() {
 			ofDrawEllipse(markerPosBone[i], 5, 5);
 		}
 	}
-
 	if (dibujaRigid) {
 		ofSetColor(0, 0, 255);
 		ofFill();
@@ -502,7 +524,6 @@ void ofApp::draw() {
 			ofDrawEllipse(rigidPos[i], 5, 5);
 		}
 	}
-
 	if (dibujaBone) {
 		ofSetColor(0, 255, 255);
 		ofFill();
@@ -511,37 +532,65 @@ void ofApp::draw() {
 			ofBox(bonePos[i], 20, 100, 20);
 		}
 	}
+	if (dibujaMarkerSphere) {
+		ofSetIcoSphereResolution(3); /// ///////////////////////
+		for (int i = 0; i < markerPos.size(); i++) {
+			//ofDrawEllipse(markerPos[i], 5, 5);
+			//ofDrawBox(markerPos[i], 15);
+			//ofDrawArrow(markerPos[i], markerPos[i]*1.1, 15);
+			ofSetColor(200);
+			ofFill();
+			ofDrawIcoSphere(markerPos[i], 15);
+			ofSetColor(50);
+			ofNoFill();
+			ofPushMatrix();
+			ofTranslate(markerPos[i]);
+			ofRotateX(ofGetElapsedTimeMillis()*.05);
+			ofRotateY(ofGetElapsedTimeMillis()*.025);
+			ofDrawIcoSphere(ofPoint(0, 0, 0), 17);
+			ofPopMatrix();
+		}
+	}
+
+	if (!creaParticulas) {
+		for (int i = 0; i < markerPos.size(); i++) {
+			//if(i%2==0)
+			parts.push_back(Particula(ofVec3f(markerPos[i].x, markerPos[i].y, markerPos[i].z), ofRandom(1,50)));
+		}
+	}
+
+	for (int i = 0; i < parts.size(); i++) {
+		parts[i].draw();
+	}
 
 	ofSetColor(120);
 	ofFill();
-	ofBox(ofPoint(0, 0, 0), 1100, 10, 800);
+	//ofBox(ofPoint(0, 0, 0), 1100, 10, 800);
 
-	mesh.draw();
-	ofSetColor(0);
-	ofNoFill();
-	meshLines.draw();
-
+	if (dibujaMesh) {
+		mesh.draw();
+		ofSetColor(0);
+		ofNoFill();
+		meshLines.draw();
+	}
+	
 	light.disable();
 	pointLight.disable();
 	ofDisableLighting();
 
-	/*
-	ofSetColor(255, 0, 0);
-	ofDrawBox(0, 0, 0, 100);
-	*/
 	cam.end();
-
 	ofDisableDepthTest();
 
-	part.draw();
-	
+		
 	if (debug) {
 		ofSetColor(255);
 		ofFill();
 		float val = ofGetFrameRate();
-		ofDrawBitmapString("fps: " + ofToString(val), ofPoint(ofGetWindowWidth() - 100, ofGetWindowHeight() - 120));
-		ofDrawBitmapString("linea: " + ofToString(lineaAnalisis), ofPoint(ofGetWindowWidth() - 100, ofGetWindowHeight() - 100));
-		ofDrawBitmapString("tiempo: " + ofToString(tiempo), ofPoint(ofGetWindowWidth() - 100, ofGetWindowHeight() - 80));
+		ofDrawBitmapString("fps: " + ofToString(val), ofPoint(ofGetWindowWidth() - 200, ofGetWindowHeight() - 150));
+		ofDrawBitmapString("linea: " + ofToString(lineaAnalisis), ofPoint(ofGetWindowWidth() - 200, ofGetWindowHeight() - 130));
+		ofDrawBitmapString("tiempo: " + ofToString(tiempo), ofPoint(ofGetWindowWidth() - 200, ofGetWindowHeight() - 110));
+		//if(parts.size()!=NULL)
+			ofDrawBitmapString("Nparts: " + ofToString(parts.size()), ofPoint(ofGetWindowWidth() - 200, ofGetWindowHeight() - 90));
 	}
 }
 
@@ -575,8 +624,12 @@ void ofApp::keyReleased(int key) {
 
 //--------------------------------------------------------------
 void ofApp::mouseMoved(int x, int y) {
-
+	//parts.push_back(Particula(ofVec3f(x, 0, 0), 100));
+	//for (int i = 0; i < parts.size(); i++) {
+	//parts.end.setup();
+	//}
 }
+
 
 //--------------------------------------------------------------
 void ofApp::windowResized(int w, int h) {
@@ -588,7 +641,10 @@ void ofApp::windowResized(int w, int h) {
 void ofApp::onToggleEvent(ofxDatGuiToggleEvent e)
 {
 	if (e.target->is("DEBUG")) debug = !debug;
+	if (e.target->is("PARTICULAS")) creaParticulas = !creaParticulas;
+	if (e.target->is("MESH")) dibujaMesh = !dibujaMesh;
 	if (e.target->is("MARKER")) dibujaMarker = !dibujaMarker;
+	if (e.target->is("MARKER SPHERE")) dibujaMarkerSphere = !dibujaMarkerSphere;
 	if (e.target->is("MARKER RIGID")) dibujaRigidMarker = !dibujaRigidMarker;
 	if (e.target->is("MARKER BONE")) dibujaBoneMarker = !dibujaBoneMarker;
 	if (e.target->is("RIGID")) dibujaRigid = !dibujaRigid;

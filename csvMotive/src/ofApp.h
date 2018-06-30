@@ -22,7 +22,8 @@ public:
 	
 	void windowResized(int w, int h);
 
-	Particula part;
+	//Particula part;
+	vector<Particula> parts;
 		
 	void analizaCSV();
 
@@ -58,6 +59,7 @@ public:
 
 	bool borra = true;
 
+	bool dibujaMarkerSphere, dibujaMesh, creaParticulas;
 	bool dibujaMarker, dibujaRigidMarker, dibujaBoneMarker, dibujaRigid, dibujaBone;
 
 	bool analiza = true;		
@@ -70,6 +72,7 @@ public:
 	/// CAMARA
 	ofEasyCam cam;
 	ofVec3f posCam;
+	int distCam = 500;
 
 	/// LUCES
 	ofLight pointLight, light;

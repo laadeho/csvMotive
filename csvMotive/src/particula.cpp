@@ -7,33 +7,46 @@ Particula::Particula(void) {
 }
 Particula::Particula(ofVec3f pos, float mass) {
 	posicion = pos;
-	posicion = ofVec3f(0, 0, 0);
 	masa = mass;
-}
+	muere = false;
+	tam = ofRandom(3,5);
 
-void Particula::setup() {	
-	aceleracion = ofVec3f(0, 0.5, 0);
-	velocidad = ofVec3f(ofRandom(-1,1), ofRandom(-2,0), ofRandom(-1,1));
+	aceleracion = ofVec3f(0, -0.5, 0);
+	velocidad = ofVec3f(ofRandom(-3, 3), ofRandom(1), ofRandom(-3, 3));
 }
 
 void Particula::update() {
 	velocidad += aceleracion;
 	posicion += velocidad;
+	if (tam > 0)
+		tam -= 0.1;
+	else
+		muere = true;
 
-	if (posicion.y > ofGetHeight()) {
-		posicion = ofVec3f(0, 0, 0);
-		velocidad = ofVec3f(ofRandom(-1, 1), ofRandom(-2, 0), ofRandom(-1, 1));
+	if (posicion.y < -20) {
+		muere = true;
 	}
 }
+
 void Particula::applyForce(ofVec3f force) {
 	ofVec3f f = force;
 	f = f / masa;
-
+	aceleracion += f;
 }
+
+
 void Particula::draw() {
+	//ofPushMatrix();
 	ofPushStyle();
 	ofSetColor(255);
 	ofFill();
-	ofSphere(ofGetWidth() / 2+posicion.x, posicion.y, posicion.z, 10);
+	//ofBox(posicion.x, posicion.y, posicion.z, 5);
+	//ofTranslate(posicion.x, posicion.y, posicion.z);
+	//ofRotateZ(cos(ofGetElapsedTimeMillis()*.1));
+	//ofDrawCircle(0,0,0, tam);
+	//ofDrawBox(posicion.x, posicion.y, posicion.z, tam);
+	ofDrawCircle(posicion.x, posicion.y, posicion.z, tam);
+
 	ofPopStyle();
+	//ofPopMatrix();
 }

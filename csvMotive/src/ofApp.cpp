@@ -1,10 +1,55 @@
 #include "ofApp.h"
-
+int tiempo = 0;
 //--------------------------------------------------------------
 void ofApp::setup(){
-	ofSetFrameRate(60);
+	/*
+	part = Particula(ofVec3f(0, 0, 0), 5);
+	part.setup();
+	*/
+
 	analizaCSV();
 	setupGUI();
+
+	//ofSetFrameRate(120);
+	ofSetVerticalSync(true);
+	//ofSetBackgroundAuto(false);
+
+	/// MESH
+	mesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP_ADJACENCY);
+	//mesh.setMode(OF_PRIMITIVE_POINTS);
+
+	meshLines.setMode(OF_PRIMITIVE_LINE_STRIP);
+
+	for (int i = 0; i < markerPos.size(); i++) {
+		ofVec3f vertice(markerPos[i].x, markerPos[i].y, markerPos[i].z);
+		mesh.addVertex(vertice);
+		meshLines.addVertex(vertice);
+		float val = ofRandom(1);
+		//mesh.addColor(ofFloatColor(val, val, val, ofRandom(1)));
+		mesh.addColor(ofFloatColor(val, val, val,ofRandom(1)));
+		offsets.push_back(ofVec3f(ofRandom(0, 100000), ofRandom(0, 100000), ofRandom(0, 100000)));
+	}
+	
+	for (int i = 0; i < markerPos.size() - 2; i += 3) {
+		mesh.addIndex(i);
+		mesh.addIndex(i + 1);
+		mesh.addIndex(i + 2);
+		meshLines.addIndex(i);
+		/*
+		meshLines.addIndex(i + 1);
+		meshLines.addIndex(i + 2);
+		*/
+	}
+	
+	/// CAMARA
+	cam.disableMouseInput();
+
+	/// LUCES
+	light.setup();
+	light.setPosition(0, 200, 0);
+
+	pointLight.setPointLight();
+
 }
 
 void ofApp::analizaCSV() {
@@ -22,22 +67,9 @@ void ofApp::analizaCSV() {
 		for (ofBuffer::Line it = buffer.getLines().begin(), end = buffer.getLines().end(); it != end; ++it) {
 			linea.push_back(*it);
 		}
-		///
+		ofLogNotice("Numero de Lineas: " + ofToString(linea.size()));
 		//////////////////////////
-		/*
-		encabezado = ofToString(buffer.getFirstLine()); // Se lee el encabezado
-		string e = buffer.getNextLine(); // Salta linea vacia
 
-		vector<string> etiquetas = ofSplitString(buffer.getNextLine(), ","); // Se almacenan las etiquetas
-		totalEtiquetas = etiquetas.size();
-		string id = buffer.getNextLine(); // se leen los nombres en un solo string
-		string id2 = buffer.getNextLine();
-
-		vector<string> tagTransform = ofSplitString(buffer.getNextLine(), ",");
-		// Se separan etiquetas de transformacion: Rotate, Position
-		vector<string> tagCoord = ofSplitString(buffer.getNextLine(), ",");
-		*/
-		
 		encabezado = linea[0]; // Se lee el encabezado
 
 		vector<string> etiquetas = ofSplitString(linea[2], ","); // Se almacenan las etiquetas
@@ -134,123 +166,8 @@ void ofApp::analizaCSV() {
 									   /// BONE Posicion y Rotacion
 		bonePos.resize(numBone / 3); // 6 indices
 		boneRot.resize(numBone / 3); // 6 indices
-
-		/*for (ofBuffer::Line lin = buffer.getLines().begin(), end = buffer.getLines().end(); lin != end; ++lin) {
-		}
-		*/
 	}
 	coordenada = ofSplitString(linea[6], ",");
-
-	/*
-	/// DEFINE NOMBRE DE ARCHIVO CSV A ANALIZAR
-	ofFile archivo(nombreArchivo + ".csv");
-	if (!archivo.exists()) ofLogError("The file " + nombreArchivo + " is missing");
-	else ofLogNotice("Archivo Encontrado: " + nombreArchivo + "\n Procesando...");
-	/// Crea archivo a escribir con datos procesados
-	editado.open(nombreArchivo + "_c_editado.csv", ofFile::WriteOnly);
-	///
-	ofBuffer buffer(archivo);
-	for (ofBuffer::Line it = buffer.getLines().begin(), end = buffer.getLines().end(); it != end; ++it) {
-	linea.push_back(*it);
-	}
-	ofLogNotice("Lineas Totales (linea.size()): " + ofToString(linea.size()));
-	for (int i = 0; i < 5; i++) {
-	ofLogNotice("Size Linea " + ofToString(i) + " : " + ofToString(linea[i].size()));
-	}
-	//ofLogNotice(ofToString(linea[3]));
-	words2 = ofSplitString(linea[2], ",");
-	ofLogNotice("words2: " + ofToString(words2.size()));
-
-	// linea 5 comienza con los datos de Posicion y Rotacion, la 6 son las valoress xyz
-	//ofLogNotice(ofToString(linea[5]));
-	words5 = ofSplitString(linea[5], ",");
-	ofLogNotice("words5: " + ofToString(words5.size()));
-	//
-	//ofLogNotice(ofToString(linea[6]));
-	words6 = ofSplitString(linea[6], ",");
-	ofLogNotice("words6: " + ofToString(words6.size()));
-	//
-	coords.clear();
-
-	for (int i = 0; i < words2.size(); i += saltoLinea) {
-	if (words2[i] == "Bone") {
-	editado << "Bone,";
-	}
-	}
-	editado << "\n";
-	for (int i = 0; i < words2.size(); i += saltoLinea) {
-	if (words2[i] == "Bone") {
-	if (words5[i] == "Position") {
-	editado << "Position,";
-	}
-	}
-	}
-	editado << "\n";
-	wordsFila = ofSplitString(linea[6], ",");
-
-	for (int i = 0; i < words2.size(); i += saltoLinea) {
-	if (words2[i] == "Bone") {
-	if (words5[i] == "Position") {
-	if (words6[i] == "X") {
-	editado << "X,";
-	x = ofToFloat(wordsFila[i]) * escala;
-	}
-	else if (words6[i] == "Y") {
-	editado << "Y,";
-	y = ofToFloat(wordsFila[i]) * escala;
-	}
-	else if (words6[i] == "Z") {
-	editado << "Z,";
-	z = ofToFloat(wordsFila[i]) * escala;
-	}
-	coords.push_back(ofPoint(x, y, z));
-	}
-	}
-
-	}
-	editado << "\n";
-
-	for (int j = 7; j<linea.size() / 10 - 1; j++) {
-	wordsFila = ofSplitString(linea[j], ",");
-	//wordsFila = ofSplitString(linea[7], ",");
-	int num = 0;
-	for (int i = 0; i < words2.size(); i += saltoLinea) {
-	if (words2[i] == "Bone") {
-	if (words5[i] == "Position") {
-	if (words6[i] == "X") {
-	x = ofToFloat(wordsFila[i]) * escala;
-	num++;
-	editado << ofToString(x, 2) << ",";
-	}
-	else if (words6[i] == "Y") {
-	y = ofToFloat(wordsFila[i]) * escala;
-	num++;
-	editado << ofToString(y, 2) << ",";
-	}
-	else if (words6[i] == "Z") {
-	z = ofToFloat(wordsFila[i]) * escala;
-	num++;
-	editado << ofToString(z, 2);// << ",";
-	}
-	coords.push_back(ofPoint(x, y, z));
-	//ofLogNotice("x:" + ofToString(x) + ",y:" + ofToString(y) + ",z:" + ofToString(z));
-	//editado << x << "," << y << "," << z << ",";
-	//editado << "\n";
-	}
-	}
-	if (num == 3) {
-	editado << "\n";
-	num = 0;
-	}
-	}
-	//editado << "\n";
-	}
-	editado.close();
-	lineaAnalisis += 2;
-	lineaAnalisis = lineaAnalisis % (linea.size() - 5);
-
-	ofLogNotice("valoress Listas");
-	*/
 }
 
 /*--- GUI --------------------------------------*/
@@ -264,6 +181,9 @@ void ofApp::setupGUI() {	////////////// OFXDATGUI
 	gui->addLabel(": : : C  O  N  F  I  G  U  R  A  D  O  R : : :");
 
 	ofxDatGuiFolder* guiDatos = gui->addFolder(":: V I S U A L I Z A R ::", ofColor::blue);
+	guiDatos->addToggle("PARTICULAS")->setChecked(false);
+	guiDatos->addToggle("MESH")->setChecked(false);
+	guiDatos->addToggle("MARKER SPHERE")->setChecked(false);
 	guiDatos->addToggle("MARKER")->setChecked(false);
 	guiDatos->addToggle("MARKER RIGID")->setChecked(false);
 	guiDatos->addToggle("MARKER BONE")->setChecked(false);
@@ -281,14 +201,91 @@ void ofApp::setupGUI() {	////////////// OFXDATGUI
 	/// GUI A MOSTRAR AL INICIO /////////////////////////
 }
 
+bool checkVive(Particula &p) {
+	return p.muere;
+}
+
 //--------------------------------------------------------------
 void ofApp::update() {
+	for (int i = 0; i < parts.size(); i++) {
+		parts[i].update();
+		parts[i].applyForce(ofVec3f(0, 0.1, 0));
+		//if (!parts[i].vive) {
+			//Particula p = parts[i];
+			//parts.pop_back();
+			//parts.clear();
+			//delete parts[i];
+		//}
+	}
+
+	/*	
+	vector<Particula>::iterator itP = parts.begin();
+	for (; itP != parts.end(); ++itP) {
+		if (!(*itP).vive) {
+			parts.erase(itP);
+		}
+	}
+	*/
+	//vector<Particula>::iterator itP = parts.;
+	ofRemove(parts, checkVive);
+
+	/*
+	bool partVive(Particula p) {
+		return !p.vive;
+	}
+	*/
+//	ofRemove(parts, partVive);
+
+	
+
+	/*for (size_t i = 0; i < parts.size(); i++) {
+		Particula p = parts[i];
+		p.update();
+		if (!p.vive) {
+			parts.cl;
+		}
+		*/
+
+		/*
+		parts[i].update();
+		if (!parts[i].vive) {
+			//Particula p = parts[i];
+			parts.pop_back();
+		}
+		
+	}
+	*/
+	tiempo = int(ofGetElapsedTimef());
+	/*
 	std::stringstream strm;
 	strm << "fps: " << ofGetFrameRate();
 	ofSetWindowTitle(strm.str());
+	*/
 
-	
-/*
+
+	updateVal();
+	updateMesh();	
+
+	//ofSaveScreen("Frame_"+ofToString(ofGetFrameNum()) + ".png");
+	/*if (ofGetFrameNum() > 10)
+	{
+		ofExit();
+		OF_EXIT_APP(0);
+		ofExitCallback();
+	}*/
+	/*
+	ofExit();
+	OF_EXIT_APP(0);
+	ofExitCallback();
+	*/
+	/// CAMARA
+	cam.setPosition(posCam);
+	cam.setTarget(ofVec3f(0, 150, 0));
+	posCam = ofVec3f(sin(ofGetElapsedTimeMillis()*.0001)*distCam, 165, cos(ofGetElapsedTimeMillis()*.0001) * distCam);
+}
+
+//--------------------------------------------------------------
+void ofApp::updateVal() {
 	int escribeMarker = 0, cuentaMarker = 0;
 	int escribeMarkerBone = 0, cuentaMarkerBone = 0;
 	int escribeMarkerRigid = 0, cuentaMarkerRigid = 0;
@@ -296,7 +293,6 @@ void ofApp::update() {
 	int escribeRigid = 0, cuentaRigid = 0;
 
 	vector<string> valores = ofSplitString(linea[lineaAnalisis], ",");
-	//ofLogNotice(ofToString(lineaAnalisis));
 	lineaAnalisis += saltoLinea;
 
 	if (lineaAnalisis % (linea.size() - 1) == 0 || lineaAnalisis > linea.size() - 1) {
@@ -465,19 +461,43 @@ void ofApp::update() {
 			}
 		}
 	}
-	*/
 }
 
 //--------------------------------------------------------------
+void ofApp::updateMesh() {
+	int numVerts = mesh.getNumVertices();
+	for (int i = 0; i < numVerts; ++i) {
+		ofVec3f vert = mesh.getVertex(i);
+
+		float time = ofGetElapsedTimef();
+		float timeScale = 2;
+		float displacementScale = 5;
+		ofVec3f timeOffsets = offsets[i];
+		vert = markerPos[i];
+		//vert = markerPosBone[i%markerPosBone.size()];
+
+		vert.x += (ofSignedNoise(time*timeScale + timeOffsets.x)) * displacementScale;
+		vert.y += (ofSignedNoise(time*timeScale + timeOffsets.y)) * displacementScale;
+		vert.z += (ofSignedNoise(time*timeScale + timeOffsets.z)) * displacementScale;
+
+		mesh.setVertex(i, vert);
+		meshLines.setVertex(i, vert);
+	}
+}
+//--------------------------------------------------------------
+
 void ofApp::draw() {
 	
 	ofBackground(0);
-	cam.begin();
-	ofSetColor(120);
-	ofFill();
 
-	ofBox(ofPoint(0, 0, 0), 1100, 10, 800);
-	/*
+	ofEnableDepthTest();
+
+	ofEnableLighting();
+	pointLight.enable();
+
+	light.enable();
+	cam.begin();
+
 	if (dibujaMarker) {
 		ofSetColor(255);
 		ofFill();
@@ -499,7 +519,6 @@ void ofApp::draw() {
 			ofDrawEllipse(markerPosBone[i], 5, 5);
 		}
 	}
-	
 	if (dibujaRigid) {
 		ofSetColor(0, 0, 255);
 		ofFill();
@@ -507,7 +526,6 @@ void ofApp::draw() {
 			ofDrawEllipse(rigidPos[i], 5, 5);
 		}
 	}
-	
 	if (dibujaBone) {
 		ofSetColor(0, 255, 255);
 		ofFill();
@@ -516,25 +534,104 @@ void ofApp::draw() {
 			ofBox(bonePos[i], 20, 100, 20);
 		}
 	}
-	*/
-	cam.end();
+	if (dibujaMarkerSphere) {
+		ofSetIcoSphereResolution(3); /// ///////////////////////
+		for (int i = 0; i < markerPos.size(); i++) {
+			//ofDrawEllipse(markerPos[i], 5, 5);
+			//ofDrawBox(markerPos[i], 15);
+			//ofDrawArrow(markerPos[i], markerPos[i]*1.1, 15);
+			ofSetColor(200);
+			ofFill();
+			ofDrawIcoSphere(markerPos[i], 15);
+			ofSetColor(50);
+			ofNoFill();
+			ofPushMatrix();
+			ofTranslate(markerPos[i]);
+			ofRotateX(ofGetElapsedTimeMillis()*.05);
+			ofRotateY(ofGetElapsedTimeMillis()*.025);
+			ofDrawIcoSphere(ofPoint(0, 0, 0), 17);
+			ofPopMatrix();
+		}
+	}
+
+	if (!creaParticulas) {
+		for (int i = 0; i < markerPos.size(); i++) {
+			//if(i%2==0)
+			parts.push_back(Particula(ofVec3f(markerPos[i].x, markerPos[i].y, markerPos[i].z), ofRandom(1,50)));
+		}
+	}
+
+	for (int i = 0; i < parts.size(); i++) {
+		parts[i].draw();
+	}
+
+	ofSetColor(120);
+	ofFill();
+	//ofBox(ofPoint(0, 0, 0), 1100, 10, 800);
+
+	if (dibujaMesh) {
+		mesh.draw();
+		ofSetColor(0);
+		ofNoFill();
+		meshLines.draw();
+	}
 	
+	light.disable();
+	pointLight.disable();
+	ofDisableLighting();
+
+	cam.end();
+	ofDisableDepthTest();
+
+		
+	if (debug) {
+		ofSetColor(255);
+		ofFill();
+		float val = ofGetFrameRate();
+		ofDrawBitmapString("fps: " + ofToString(val), ofPoint(ofGetWindowWidth() - 200, ofGetWindowHeight() - 150));
+		ofDrawBitmapString("linea: " + ofToString(lineaAnalisis), ofPoint(ofGetWindowWidth() - 200, ofGetWindowHeight() - 130));
+		ofDrawBitmapString("tiempo: " + ofToString(tiempo), ofPoint(ofGetWindowWidth() - 200, ofGetWindowHeight() - 110));
+		//if(parts.size()!=NULL)
+			ofDrawBitmapString("Nparts: " + ofToString(parts.size()), ofPoint(ofGetWindowWidth() - 200, ofGetWindowHeight() - 90));
+	}
 }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key) {
-	
+	switch (key) {
+	case '1':
+		cam.dolly(-150);
+		break;
+	case '2':
+		cam.dolly(150);
+		break;
+	case '3':
+		cam.boom(-150);
+		break;
+	case '4':
+		cam.boom(150);
+		break;
+	}
 }
 
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key) {
+	switch (key) {
+	case 'd':
+		debug = !debug;
+		break;
 
+	}
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseMoved(int x, int y) {
-
+	//parts.push_back(Particula(ofVec3f(x, 0, 0), 100));
+	//for (int i = 0; i < parts.size(); i++) {
+	//parts.end.setup();
+	//}
 }
+
 
 //--------------------------------------------------------------
 void ofApp::windowResized(int w, int h) {
@@ -546,7 +643,10 @@ void ofApp::windowResized(int w, int h) {
 void ofApp::onToggleEvent(ofxDatGuiToggleEvent e)
 {
 	if (e.target->is("DEBUG")) debug = !debug;
+	if (e.target->is("PARTICULAS")) creaParticulas = !creaParticulas;
+	if (e.target->is("MESH")) dibujaMesh = !dibujaMesh;
 	if (e.target->is("MARKER")) dibujaMarker = !dibujaMarker;
+	if (e.target->is("MARKER SPHERE")) dibujaMarkerSphere = !dibujaMarkerSphere;
 	if (e.target->is("MARKER RIGID")) dibujaRigidMarker = !dibujaRigidMarker;
 	if (e.target->is("MARKER BONE")) dibujaBoneMarker = !dibujaBoneMarker;
 	if (e.target->is("RIGID")) dibujaRigid = !dibujaRigid;

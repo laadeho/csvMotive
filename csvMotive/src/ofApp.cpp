@@ -57,7 +57,7 @@ void ofApp::analizaCSV() {
 
 	if (result.bSuccess) {
 		string name = result.filePath;
-		ofLogNotice("Se abre archivo: " + name);
+		//ofLogNotice("Se abre archivo: " + name);
 
 		ofFile archivoCSV;
 		archivoCSV.open(ofToDataPath(name), ofFile::ReadOnly, false);
@@ -67,7 +67,7 @@ void ofApp::analizaCSV() {
 		for (ofBuffer::Line it = buffer.getLines().begin(), end = buffer.getLines().end(); it != end; ++it) {
 			linea.push_back(*it);
 		}
-		ofLogNotice("Numero de Lineas: " + ofToString(linea.size()));
+		//ofLogNotice("Numero de Lineas: " + ofToString(linea.size()));
 		//////////////////////////
 
 		encabezado = linea[0]; // Se lee el encabezado
@@ -77,12 +77,12 @@ void ofApp::analizaCSV() {
 
 		tagTransform = ofSplitString(linea[5], ",");
 
-		if (debug) {
+		/*if (debug) {
 			ofLogNotice("ENCABEZADO: " + encabezado);
 			//ofLogNotice("" + e);
 			ofLogNotice("ETIQUETAS: " + ofToString(etiquetas));
 			ofLogNotice("TRANSFORMACIONES: " + ofToString(tagTransform));
-		}
+		}*/
 		coordenada.resize(totalEtiquetas);
 		/// COMPROBACIONES DE ETIQUETAS Y ALMACENAMIENTO DE VALORES EN VARIABLES
 		esMarker.resize(etiquetas.size());
@@ -281,7 +281,10 @@ void ofApp::update() {
 	/// CAMARA
 	cam.setPosition(posCam);
 	cam.setTarget(ofVec3f(0, 150, 0));
-	posCam = ofVec3f(sin(ofGetElapsedTimeMillis()*.0001)*distCam, 165, cos(ofGetElapsedTimeMillis()*.0001) * distCam);
+	posCam = ofVec3f(sin(angulo)*distCam, 165, cos(angulo) * distCam);
+
+	if (rota)
+		angulo += 0.005;
 }
 
 //--------------------------------------------------------------
@@ -565,9 +568,13 @@ void ofApp::draw() {
 		parts[i].draw();
 	}
 
-	ofSetColor(120);
-	ofFill();
-	//ofBox(ofPoint(0, 0, 0), 1100, 10, 800);
+	ofSetColor(50);
+	ofNoFill();
+	ofPushMatrix();
+	ofRotateX(90);
+	ofRotateY(90);
+	ofDrawGridPlane(100, 10, false);
+	ofPopMatrix();
 
 	if (dibujaMesh) {
 		mesh.draw();
@@ -610,6 +617,15 @@ void ofApp::keyPressed(int key) {
 		break;
 	case '4':
 		cam.boom(150);
+		break;
+	case 'r':
+		rota = !rota;
+		break;
+	case 'f':
+		fs = !fs;
+		ofSetFullscreen(fs);
+		if(!fs)
+			ofSetWindowPosition(100, 100);
 		break;
 	}
 }

@@ -73,6 +73,9 @@ public:
 	ofEasyCam cam;
 	ofVec3f posCam;
 	int distCam = 500;
+	float angulo;
+	bool fs = true;
+	bool rota;
 
 	/// LUCES
 	ofLight pointLight, light;

@@ -287,6 +287,8 @@ void ofApp::update() {
 	strm << "fps: " << ofGetFrameRate();
 	ofSetWindowTitle(strm.str());
 
+	
+/*
 	int escribeMarker = 0, cuentaMarker = 0;
 	int escribeMarkerBone = 0, cuentaMarkerBone = 0;
 	int escribeMarkerRigid = 0, cuentaMarkerRigid = 0;
@@ -463,17 +465,19 @@ void ofApp::update() {
 			}
 		}
 	}
+	*/
 }
 
 //--------------------------------------------------------------
 void ofApp::draw() {
+	
 	ofBackground(0);
 	cam.begin();
 	ofSetColor(120);
 	ofFill();
 
 	ofBox(ofPoint(0, 0, 0), 1100, 10, 800);
-
+	/*
 	if (dibujaMarker) {
 		ofSetColor(255);
 		ofFill();
@@ -512,8 +516,9 @@ void ofApp::draw() {
 			ofBox(bonePos[i], 20, 100, 20);
 		}
 	}
-	
+	*/
 	cam.end();
+	
 }
 
 //--------------------------------------------------------------
@@ -549,13 +554,4 @@ void ofApp::onToggleEvent(ofxDatGuiToggleEvent e)
 }
 void ofApp::onDropdownEvent(ofxDatGuiDropdownEvent e)
 {
-	/*
-	if (e.target->is("D I A M E T R O   D I J E")) {
-		//// DIJE
-		diamD = diametroDije[e.child];
-		radioDije = diamD / 2;
-		productoSave = "Dije";
-		tamTallaSave = dijeDiamArray[e.child];
-	}
-	*/
 }

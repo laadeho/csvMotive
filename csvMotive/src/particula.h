@@ -13,6 +13,8 @@ public:
 	ofVec3f posicion;
 	ofVec3f aceleracion;
 	ofVec3f velocidad;
+	ofVec3f gravedad;
+
 	float masa;
 	float secondsInMove=1;
 

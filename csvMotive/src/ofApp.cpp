@@ -7,21 +7,21 @@ void ofApp::setup(){
 	part.setup();
 	*/
 
-	analizaCSV();
+	//analizaCSV();
 	setupGUI();
 
 	//ofSetFrameRate(120);
 	ofSetVerticalSync(true);
 	//ofSetBackgroundAuto(false);
-
+	
 	/// MESH
 	mesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP_ADJACENCY);
 	//mesh.setMode(OF_PRIMITIVE_POINTS);
 
 	meshLines.setMode(OF_PRIMITIVE_LINE_STRIP);
 
-	for (int i = 0; i < markerPos.size(); i++) {
-		ofVec3f vertice(markerPos[i].x, markerPos[i].y, markerPos[i].z);
+	for (int i = 0; i < analiza.markerPos.size(); i++) {
+		ofVec3f vertice(analiza.markerPos[i].x, analiza.markerPos[i].y, analiza.markerPos[i].z);
 		mesh.addVertex(vertice);
 		meshLines.addVertex(vertice);
 		float val = ofRandom(1);
@@ -30,15 +30,13 @@ void ofApp::setup(){
 		offsets.push_back(ofVec3f(ofRandom(0, 100000), ofRandom(0, 100000), ofRandom(0, 100000)));
 	}
 	
-	for (int i = 0; i < markerPos.size() - 2; i += 3) {
+	for (int i = 0; i < analiza.markerPos.size() - 2; i += 3) {
 		mesh.addIndex(i);
 		mesh.addIndex(i + 1);
 		mesh.addIndex(i + 2);
 		meshLines.addIndex(i);
-		/*
-		meshLines.addIndex(i + 1);
-		meshLines.addIndex(i + 2);
-		*/
+		//meshLines.addIndex(i + 1);
+		//meshLines.addIndex(i + 2);
 	}
 	
 	/// CAMARA
@@ -52,6 +50,7 @@ void ofApp::setup(){
 
 }
 
+/*
 void ofApp::analizaCSV() {
 	ofFileDialogResult result = ofSystemLoadDialog("Selecciona un archivo csv para analizar");
 
@@ -77,12 +76,12 @@ void ofApp::analizaCSV() {
 
 		tagTransform = ofSplitString(linea[5], ",");
 
-		/*if (debug) {
+		if (debug) {
 			ofLogNotice("ENCABEZADO: " + encabezado);
 			//ofLogNotice("" + e);
 			ofLogNotice("ETIQUETAS: " + ofToString(etiquetas));
 			ofLogNotice("TRANSFORMACIONES: " + ofToString(tagTransform));
-		}*/
+		}
 		coordenada.resize(totalEtiquetas);
 		/// COMPROBACIONES DE ETIQUETAS Y ALMACENAMIENTO DE VALORES EN VARIABLES
 		esMarker.resize(etiquetas.size());
@@ -169,6 +168,7 @@ void ofApp::analizaCSV() {
 	}
 	coordenada = ofSplitString(linea[6], ",");
 }
+*/
 
 /*--- GUI --------------------------------------*/
 void ofApp::setupGUI() {	////////////// OFXDATGUI
@@ -210,60 +210,20 @@ void ofApp::update() {
 	for (int i = 0; i < parts.size(); i++) {
 		parts[i].update();
 		parts[i].applyForce(ofVec3f(0, 0.1, 0));
-		//if (!parts[i].vive) {
-			//Particula p = parts[i];
-			//parts.pop_back();
-			//parts.clear();
-			//delete parts[i];
-		//}
 	}
 
-	/*	
-	vector<Particula>::iterator itP = parts.begin();
-	for (; itP != parts.end(); ++itP) {
-		if (!(*itP).vive) {
-			parts.erase(itP);
-		}
-	}
-	*/
-	//vector<Particula>::iterator itP = parts.;
 	ofRemove(parts, checkVive);
 
-	/*
-	bool partVive(Particula p) {
-		return !p.vive;
-	}
-	*/
-//	ofRemove(parts, partVive);
-
-	
-
-	/*for (size_t i = 0; i < parts.size(); i++) {
-		Particula p = parts[i];
-		p.update();
-		if (!p.vive) {
-			parts.cl;
-		}
-		*/
-
-		/*
-		parts[i].update();
-		if (!parts[i].vive) {
-			//Particula p = parts[i];
-			parts.pop_back();
-		}
-		
-	}
-	*/
 	tiempo = int(ofGetElapsedTimef());
+
 	/*
 	std::stringstream strm;
 	strm << "fps: " << ofGetFrameRate();
 	ofSetWindowTitle(strm.str());
 	*/
 
-
-	updateVal();
+	//updateVal();
+	analiza.update();
 	updateMesh();	
 
 	//ofSaveScreen("Frame_"+ofToString(ofGetFrameNum()) + ".png");
@@ -278,6 +238,7 @@ void ofApp::update() {
 	OF_EXIT_APP(0);
 	ofExitCallback();
 	*/
+
 	/// CAMARA
 	cam.setPosition(posCam);
 	cam.setTarget(ofVec3f(0, 150, 0));
@@ -288,6 +249,7 @@ void ofApp::update() {
 }
 
 //--------------------------------------------------------------
+/*
 void ofApp::updateVal() {
 	int escribeMarker = 0, cuentaMarker = 0;
 	int escribeMarkerBone = 0, cuentaMarkerBone = 0;
@@ -465,6 +427,7 @@ void ofApp::updateVal() {
 		}
 	}
 }
+*/
 
 //--------------------------------------------------------------
 void ofApp::updateMesh() {
@@ -476,7 +439,7 @@ void ofApp::updateMesh() {
 		float timeScale = 2;
 		float displacementScale = 5;
 		ofVec3f timeOffsets = offsets[i];
-		vert = markerPos[i];
+		vert = analiza.markerPos[i];
 		//vert = markerPosBone[i%markerPosBone.size()];
 
 		vert.x += (ofSignedNoise(time*timeScale + timeOffsets.x)) * displacementScale;
@@ -501,55 +464,55 @@ void ofApp::draw() {
 	light.enable();
 	cam.begin();
 
-	if (dibujaMarker) {
+	if (analiza.dibujaMarker) {
 		ofSetColor(255);
 		ofFill();
-		for (int i = 0; i < markerPos.size(); i++) {
-			ofDrawEllipse(markerPos[i], 5, 5);
+		for (int i = 0; i <analiza.markerPos.size(); i++) {
+			ofDrawEllipse(analiza.markerPos[i], 5, 5);
 		}
 	}
-	if (dibujaRigidMarker) {
+	if (analiza.dibujaRigidMarker) {
 		ofSetColor(255, 0, 0);
 		ofFill();
-		for (int i = 0; i < markerPosRigid.size(); i++) {
-			ofDrawEllipse(markerPosRigid[i], 5, 5);
+		for (int i = 0; i < analiza.markerPosRigid.size(); i++) {
+			ofDrawEllipse(analiza.markerPosRigid[i], 5, 5);
 		}
 	}
-	if (dibujaBoneMarker) {
+	if (analiza.dibujaBoneMarker) {
 		ofSetColor(0, 255, 0);
 		ofFill();
-		for (int i = 0; i < markerPosBone.size(); i++) {
-			ofDrawEllipse(markerPosBone[i], 5, 5);
+		for (int i = 0; i < analiza.markerPosBone.size(); i++) {
+			ofDrawEllipse(analiza.markerPosBone[i], 5, 5);
 		}
 	}
-	if (dibujaRigid) {
+	if (analiza.dibujaRigid) {
 		ofSetColor(0, 0, 255);
 		ofFill();
-		for (int i = 0; i < rigidPos.size(); i++) {
-			ofDrawEllipse(rigidPos[i], 5, 5);
+		for (int i = 0; i < analiza.rigidPos.size(); i++) {
+			ofDrawEllipse(analiza.rigidPos[i], 5, 5);
 		}
 	}
-	if (dibujaBone) {
+	if (analiza.dibujaBone) {
 		ofSetColor(0, 255, 255);
 		ofFill();
-		for (int i = 0; i < bonePos.size(); i++) {
-			ofDrawEllipse(bonePos[i], 5, 5);
-			ofBox(bonePos[i], 20, 100, 20);
+		for (int i = 0; i < analiza.bonePos.size(); i++) {
+			ofDrawEllipse(analiza.bonePos[i], 5, 5);
+			ofBox(analiza.bonePos[i], 20, 100, 20);
 		}
 	}
-	if (dibujaMarkerSphere) {
+	if (analiza.dibujaMarkerSphere) {
 		ofSetIcoSphereResolution(3); /// ///////////////////////
-		for (int i = 0; i < markerPos.size(); i++) {
+		for (int i = 0; i < analiza.markerPos.size(); i++) {
 			//ofDrawEllipse(markerPos[i], 5, 5);
 			//ofDrawBox(markerPos[i], 15);
 			//ofDrawArrow(markerPos[i], markerPos[i]*1.1, 15);
 			ofSetColor(200);
 			ofFill();
-			ofDrawIcoSphere(markerPos[i], 15);
+			ofDrawIcoSphere(analiza.markerPos[i], 15);
 			ofSetColor(50);
 			ofNoFill();
 			ofPushMatrix();
-			ofTranslate(markerPos[i]);
+			ofTranslate(analiza.markerPos[i]);
 			ofRotateX(ofGetElapsedTimeMillis()*.05);
 			ofRotateY(ofGetElapsedTimeMillis()*.025);
 			ofDrawIcoSphere(ofPoint(0, 0, 0), 17);
@@ -557,10 +520,10 @@ void ofApp::draw() {
 		}
 	}
 
-	if (!creaParticulas) {
-		for (int i = 0; i < markerPos.size(); i++) {
+	if (!analiza.creaParticulas) {
+		for (int i = 0; i < analiza.markerPos.size(); i++) {
 			//if(i%2==0)
-			parts.push_back(Particula(ofVec3f(markerPos[i].x, markerPos[i].y, markerPos[i].z), ofRandom(1,50)));
+			parts.push_back(Particula(ofVec3f(analiza.markerPos[i].x, analiza.markerPos[i].y, analiza.markerPos[i].z), ofRandom(1,20)));
 		}
 	}
 
@@ -576,7 +539,7 @@ void ofApp::draw() {
 	ofDrawGridPlane(100, 10, false);
 	ofPopMatrix();
 
-	if (dibujaMesh) {
+	if (analiza.dibujaMesh) {
 		mesh.draw();
 		ofSetColor(0);
 		ofNoFill();
@@ -596,7 +559,7 @@ void ofApp::draw() {
 		ofFill();
 		float val = ofGetFrameRate();
 		ofDrawBitmapString("fps: " + ofToString(val), ofPoint(ofGetWindowWidth() - 200, ofGetWindowHeight() - 150));
-		ofDrawBitmapString("linea: " + ofToString(lineaAnalisis), ofPoint(ofGetWindowWidth() - 200, ofGetWindowHeight() - 130));
+		ofDrawBitmapString("linea: " + ofToString(analiza.lineaAnalisis), ofPoint(ofGetWindowWidth() - 200, ofGetWindowHeight() - 130));
 		ofDrawBitmapString("tiempo: " + ofToString(tiempo), ofPoint(ofGetWindowWidth() - 200, ofGetWindowHeight() - 110));
 		//if(parts.size()!=NULL)
 			ofDrawBitmapString("Nparts: " + ofToString(parts.size()), ofPoint(ofGetWindowWidth() - 200, ofGetWindowHeight() - 90));
@@ -659,14 +622,14 @@ void ofApp::windowResized(int w, int h) {
 void ofApp::onToggleEvent(ofxDatGuiToggleEvent e)
 {
 	if (e.target->is("DEBUG")) debug = !debug;
-	if (e.target->is("PARTICULAS")) creaParticulas = !creaParticulas;
-	if (e.target->is("MESH")) dibujaMesh = !dibujaMesh;
-	if (e.target->is("MARKER")) dibujaMarker = !dibujaMarker;
-	if (e.target->is("MARKER SPHERE")) dibujaMarkerSphere = !dibujaMarkerSphere;
-	if (e.target->is("MARKER RIGID")) dibujaRigidMarker = !dibujaRigidMarker;
-	if (e.target->is("MARKER BONE")) dibujaBoneMarker = !dibujaBoneMarker;
-	if (e.target->is("RIGID")) dibujaRigid = !dibujaRigid;
-	if (e.target->is("BONE")) dibujaBone = !dibujaBone;
+	if (e.target->is("PARTICULAS")) analiza.creaParticulas = !analiza.creaParticulas;
+	if (e.target->is("MESH")) analiza.dibujaMesh = !analiza.dibujaMesh;
+	if (e.target->is("MARKER")) analiza.dibujaMarker = !analiza.dibujaMarker;
+	if (e.target->is("MARKER SPHERE")) analiza.dibujaMarkerSphere = !analiza.dibujaMarkerSphere;
+	if (e.target->is("MARKER RIGID")) analiza.dibujaRigidMarker = !analiza.dibujaRigidMarker;
+	if (e.target->is("MARKER BONE")) analiza.dibujaBoneMarker = !analiza.dibujaBoneMarker;
+	if (e.target->is("RIGID")) analiza.dibujaRigid = !analiza.dibujaRigid;
+	if (e.target->is("BONE")) analiza.dibujaBone = !analiza.dibujaBone;
 }
 void ofApp::onDropdownEvent(ofxDatGuiDropdownEvent e)
 {

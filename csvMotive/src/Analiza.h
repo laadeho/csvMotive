@@ -30,7 +30,9 @@ public:
 	string encabezado;
 	int totalEtiquetas;
 	vector <string> linea;
-	vector<string> nameMarker; /// //////
+	//vector<string> nameMarker; /// //////
+
+	int fpsFromFile;
 
 	bool dibujaMarkerSphere, dibujaMesh, creaParticulas, dibujaEtiqueta;
 	bool dibujaMarker, dibujaRigidMarker, dibujaBoneMarker, dibujaRigid, dibujaBone;

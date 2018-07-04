@@ -21,4 +21,8 @@ public:
 	bool muere;
 	float tam = 4;
 	float limInf = 0;
+
+	void invierteGravedad();
+	bool invGrav;
+	int valGrav = 0.98;
 };

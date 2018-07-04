@@ -3,21 +3,25 @@
 #include "particula.h"
 
 Particula::Particula(void) {
-
+	
 }
 
 Particula::Particula(ofVec3f pos, float mass) {
-	gravedad = ofVec3f(0, -0.98, 0);
+	gravedad = ofVec3f(0, valGrav, 0);
 
 	posicion = pos;
 	masa = mass;
 	muere = false;
 	tam = ofRandom(tam/2,tam);
 
-	aceleracion = ofVec3f(0, -0.15, 0);
-	velocidad = ofVec3f(ofRandom(-0.1, 0.1), ofRandom(-0.5), ofRandom(-0.1, 0.1));
+	//aceleracion = ofVec3f(0, 0, 0);
+	velocidad = ofVec3f(ofRandom(-0.5, 0.5), 0, ofRandom(-0.5, 0.5));
 }
+void Particula::invierteGravedad() {
+	//valGrav *=-1;
+	//gravedad = ofVec3f(0, valGrav, 0);
 
+}
 void Particula::update() {
 	velocidad += aceleracion;
 	posicion += velocidad;
@@ -28,7 +32,7 @@ void Particula::update() {
 	else
 		muere = true;
 
-	if (posicion.y < -20) {
+	if (posicion.y < -20 || posicion.y > 2000) {
 		muere = true;
 	}
 	applyForce(gravedad);

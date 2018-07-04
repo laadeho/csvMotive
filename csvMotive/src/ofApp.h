@@ -23,6 +23,7 @@ public:
 	void windowResized(int w, int h);
 
 	//Particula part;
+	Particula partConfig;
 	vector<Particula> parts;
 	
 	bool borra = true; // no se para que se esta usando actualmente

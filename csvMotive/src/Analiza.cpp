@@ -25,26 +25,69 @@ void Analiza::analizaCSV() {
 	//////////////////////////
 
 	encabezado = linea[0]; // Se lee el encabezado
+	vector<string> datosEncabezado = ofSplitString(linea[0], ",");
+	fpsFromFile = ofToInt(datosEncabezado[7]);
 
 	vector<string> etiquetas = ofSplitString(linea[2], ","); // Se almacenan las etiquetas
 	totalEtiquetas = etiquetas.size();
 
 	vector<string> nameMarkerLinea = ofSplitString(linea[3], ",");
+
+	//coordenada.resize(totalEtiquetas);
+	tagTransform = ofSplitString(linea[5], ",");
+	coordenada = ofSplitString(linea[6], ",");
+
+	// nameMarker
 	/*
-	ofLogNotice("Nombre de Markers: " + ofToString(linea[3]));
-	ofLogNotice("Tamanio de Markers: " + ofToString(nameMarker.size()));
-	ofLogNotice("Tamanio de Etiquetas: " + ofToString(etiquetas.size()));
+	int escribeNameMarker = 0;
+	int cuentaNameMarker = 0;
+	for(int i = 0; i < nameMarkerLinea.size(); i++) {
+		if (tagTransform[i] == "Rotation") {
+			if (coordenada[i] == "X")
+			{
+				cuentaNameMarker++;
+			}
+			else if (coordenada[i] == "Y")
+			{
+				cuentaNameMarker++;
+			}
+			else if (coordenada[i] == "Z" || coordenada[i] == "Z\r" || coordenada[i] == "Z\n")
+			{
+				cuentaNameMarker++;
+			}
+			else
+			{
+				return;
+			}
+		}
+		else if (tagTransform[i] == "Position") {
+			if (coordenada[i] == "X")
+			{
+				cuentaNameMarker++;
+				nameMarker.push_back(nameMarkerLinea[i]);
+			}
+			else if (coordenada[i] == "Y")
+			{
+				cuentaNameMarker++;
+			}
+			else if (coordenada[i] == "Z" || coordenada[i] == "Z\r" || coordenada[i] == "Z\n")
+			{
+				cuentaNameMarker++;
+			}
+			else
+			{
+				return;
+			}
+		}
+		ofLogNotice(nameMarker);
+		if (cuentaNameMarker % 3 == 0)
+		{
+			escribeNameMarker++;
+			escribeNameMarker = escribeNameMarker % nameMarkerLinea.size(); /// posiblemente no sea necesario, dado que ésto solo corre una vez
+		}
+	}
 	*/
 
-	tagTransform = ofSplitString(linea[5], ",");
-
-	/*if (debug) {
-	ofLogNotice("ENCABEZADO: " + encabezado);
-	//ofLogNotice("" + e);
-	ofLogNotice("ETIQUETAS: " + ofToString(etiquetas));
-	ofLogNotice("TRANSFORMACIONES: " + ofToString(tagTransform));
-	}*/
-	coordenada.resize(totalEtiquetas);
 	/// COMPROBACIONES DE ETIQUETAS Y ALMACENAMIENTO DE VALORES EN VARIABLES
 	esMarker.resize(etiquetas.size());
 	esRigidMarker.resize(etiquetas.size());
@@ -126,7 +169,7 @@ void Analiza::analizaCSV() {
 	bonePos.resize(numBone / 3); // 6 indices
 	boneRot.resize(numBone / 3); // 6 indices
 	}
-	coordenada = ofSplitString(linea[6], ",");
+
 }
 
 void Analiza::update() {
@@ -161,7 +204,7 @@ void Analiza::update() {
 					markerPos[escribeMarker].y = ofToFloat(valores[i]) * escala;
 					cuentaMarker++;
 				}
-				else if (coordenada[i] == "Z" || valores[i] == "Z\r" || valores[i] == "Z\n")
+				else if (coordenada[i] == "Z" || coordenada[i] == "Z\r" || coordenada[i] == "Z\n")
 				{
 					markerPos[escribeMarker].z = ofToFloat(valores[i]) * escala;
 					cuentaMarker++;
@@ -192,7 +235,7 @@ void Analiza::update() {
 					markerPosRigid[escribeMarkerRigid].y = ofToFloat(valores[i]) * escala;
 					cuentaMarkerRigid++;
 				}
-				else if (coordenada[i] == "Z" || valores[i] == "Z\r" || valores[i] == "Z\n")
+				else if (coordenada[i] == "Z" || coordenada[i] == "Z\r" || coordenada[i] == "Z\n")
 				{
 					markerPosRigid[escribeMarkerRigid].z = ofToFloat(valores[i]) * escala;
 					cuentaMarkerRigid++;
@@ -223,7 +266,7 @@ void Analiza::update() {
 					markerPosBone[escribeMarkerBone].y = ofToFloat(valores[i]) * escala;
 					cuentaMarkerBone++;
 				}
-				else if (coordenada[i] == "Z" || valores[i] == "Z\r" || valores[i] == "Z\n")
+				else if (coordenada[i] == "Z" || coordenada[i] == "Z\r" || coordenada[i] == "Z\n")
 				{
 					markerPosBone[escribeMarkerBone].z = ofToFloat(valores[i]) * escala;
 					cuentaMarkerBone++;
@@ -255,7 +298,7 @@ void Analiza::update() {
 						rigidPos[escribeRigid].y = ofToFloat(valores[i]) * escala;
 						cuentaRigid++;
 					}
-					else if (coordenada[i] == "Z" || valores[i] == "Z\r" || valores[i] == "Z\n")
+					else if (coordenada[i] == "Z" || coordenada[i] == "Z\r" || coordenada[i] == "Z\n")
 					{
 						rigidPos[escribeRigid].z = ofToFloat(valores[i]) * escala;
 						cuentaRigid++;
@@ -288,7 +331,7 @@ void Analiza::update() {
 						bonePos[escribeBone].y = ofToFloat(valores[i]) * escala;
 						cuentaBone++;
 					}
-					else if (coordenada[i] == "Z" || valores[i] == "Z\r" || valores[i] == "Z\n")
+					else if (coordenada[i] == "Z" || coordenada[i] == "Z\r" || coordenada[i] == "Z\n")
 					{
 						bonePos[escribeBone].z = ofToFloat(valores[i]) * escala;
 						cuentaBone++;

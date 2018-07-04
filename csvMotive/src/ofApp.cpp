@@ -2,6 +2,8 @@
 int tiempo = 0;
 //--------------------------------------------------------------
 void ofApp::setup(){
+	partConfig = Particula();
+
 	setupGUI();
 	//ofSetFrameRate(120);
 	ofSetVerticalSync(true);
@@ -43,6 +45,7 @@ void ofApp::setup(){
 
 	pointLight.setPointLight();
 
+	ofSetFrameRate(analiza.fpsFromFile);
 }
 
 /*
@@ -181,6 +184,7 @@ void ofApp::setupGUI() {	////////////// OFXDATGUI
 	ofxDatGuiSlider* slider = gui->addSlider("DIST CAM", 100, 1500, 500);
 	slider->onSliderEvent(this, &ofApp::onSliderEvent);
 
+	guiDatos->addToggle("GRAVEDAD")->setChecked(false);
 	guiDatos->addToggle("PARTICULAS")->setChecked(false);
 	guiDatos->addToggle("MESH")->setChecked(false);
 	guiDatos->addToggle("MARKER SPHERE")->setChecked(false);
@@ -209,7 +213,7 @@ bool checkVive(Particula &p) {
 void ofApp::update() {
 	for (int i = 0; i < parts.size(); i++) {
 		parts[i].update();
-		parts[i].applyForce(ofVec3f(0, 0.1, 0));
+		//parts[i].applyForce(ofVec3f(0, 0.1, 0));
 	}
 
 	ofRemove(parts, checkVive);
@@ -518,13 +522,14 @@ void ofApp::draw() {
 		if (ofGetFrameNum() % 3 == 0) {
 			for (int i = 0; i < analiza.markerPos.size(); i++) {
 				//if(i%4==0)
-				parts.push_back(Particula(ofVec3f(analiza.markerPos[i].x, analiza.markerPos[i].y, analiza.markerPos[i].z), ofRandom(1, 20)));
+				//parts.push_back(Particula(ofVec3f(analiza.markerPos[i].x, analiza.markerPos[i].y, analiza.markerPos[i].z), ofRandom(1, 20)));
+				parts.push_back(Particula(ofVec3f(analiza.markerPos[i].x, analiza.markerPos[i].y, analiza.markerPos[i].z), 0.01));
 			}
 		}
 	}
 
-	if (analiza.dibujaEtiqueta) {
-		/*for (int i = 0; i < analiza.nameMarker.size(); i++) {
+	/*if (analiza.dibujaEtiqueta) {
+		for (int i = 0; i < analiza.nameMarker.size(); i++) {
 			//if (i < analiza.markerPos.size()) {
 				//ofDrawBitmapString(analiza.etiquetas[i], analiza.markerPos[i]);
 				//myfont.drawString(ofToString(analiza.markerPos[i]), analiza.markerPos[i].x, analiza.markerPos[i].y);
@@ -535,9 +540,9 @@ void ofApp::draw() {
 			ofPopMatrix();
 			
 			//}
-		}*/
+		}
 	}
-
+	*/
 	for (int i = 0; i < parts.size(); i++) {
 		parts[i].draw();
 	}
@@ -572,7 +577,8 @@ void ofApp::draw() {
 		ofSetColor(255);
 		ofFill();
 		float val = ofGetFrameRate();
-		ofDrawBitmapString("fps: " + ofToString(val), ofPoint(ofGetWindowWidth() - 200, ofGetWindowHeight() - 150));
+		ofDrawBitmapString("FPS data: " + ofToString(analiza.fpsFromFile), ofPoint(ofGetWindowWidth() - 200, ofGetWindowHeight() - 180));
+		ofDrawBitmapString("fps: " + ofToString(val), ofPoint(ofGetWindowWidth() - 200, ofGetWindowHeight() - 160));
 		ofDrawBitmapString("linea: " + ofToString(analiza.lineaAnalisis), ofPoint(ofGetWindowWidth() - 200, ofGetWindowHeight() - 130));
 		ofDrawBitmapString("tiempo: " + ofToString(tiempo), ofPoint(ofGetWindowWidth() - 200, ofGetWindowHeight() - 110));
 		ofDrawBitmapString("Nparts: " + ofToString(parts.size()), ofPoint(ofGetWindowWidth() - 200, ofGetWindowHeight() - 90));
@@ -603,8 +609,14 @@ void ofApp::keyPressed(int key) {
 	case 'e':
 		analiza.dibujaEtiqueta = !analiza.dibujaEtiqueta;
 		break;
+	case 'p':
+		analiza.creaParticulas = !analiza.creaParticulas;
+		break;
 	case 'g':
 		grid = !grid;
+		break;
+	case 'G':
+		partConfig.invierteGravedad();
 		break;
 	case 'f':
 		fs = !fs;
@@ -643,7 +655,7 @@ void ofApp::windowResized(int w, int h) {
 /// ==== EVENTOS ===================================
 void ofApp::onToggleEvent(ofxDatGuiToggleEvent e)
 {
-	if (e.target->is("DEBUG")) debug = !debug;
+	//if (e.target->is("GRAVEDAD"))  partConfig.invierteGravedad();
 	if (e.target->is("ETIQUETAS")) analiza.dibujaEtiqueta = !analiza.dibujaEtiqueta;
 	if (e.target->is("PARTICULAS")) analiza.creaParticulas = !analiza.creaParticulas;
 	if (e.target->is("MESH")) analiza.dibujaMesh = !analiza.dibujaMesh;

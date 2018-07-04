@@ -523,7 +523,7 @@ void ofApp::draw() {
 			for (int i = 0; i < analiza.markerPos.size(); i++) {
 				//if(i%4==0)
 				//parts.push_back(Particula(ofVec3f(analiza.markerPos[i].x, analiza.markerPos[i].y, analiza.markerPos[i].z), ofRandom(1, 20)));
-				parts.push_back(Particula(ofVec3f(analiza.markerPos[i].x, analiza.markerPos[i].y, analiza.markerPos[i].z), 0.01));
+				parts.push_back(Particula(ofVec3f(analiza.markerPos[i].x, analiza.markerPos[i].y, analiza.markerPos[i].z), 20, invierteGravedad));
 			}
 		}
 	}
@@ -616,7 +616,7 @@ void ofApp::keyPressed(int key) {
 		grid = !grid;
 		break;
 	case 'G':
-		partConfig.invierteGravedad();
+		invierteGravedad = !invierteGravedad;
 		break;
 	case 'f':
 		fs = !fs;
@@ -655,7 +655,7 @@ void ofApp::windowResized(int w, int h) {
 /// ==== EVENTOS ===================================
 void ofApp::onToggleEvent(ofxDatGuiToggleEvent e)
 {
-	//if (e.target->is("GRAVEDAD"))  partConfig.invierteGravedad();
+	if (e.target->is("GRAVEDAD"))  invierteGravedad = !invierteGravedad;
 	if (e.target->is("ETIQUETAS")) analiza.dibujaEtiqueta = !analiza.dibujaEtiqueta;
 	if (e.target->is("PARTICULAS")) analiza.creaParticulas = !analiza.creaParticulas;
 	if (e.target->is("MESH")) analiza.dibujaMesh = !analiza.dibujaMesh;

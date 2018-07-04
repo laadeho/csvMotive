@@ -6,6 +6,7 @@ class Particula {
 public:
 	Particula();
 	Particula(ofVec3f pos, float mass);
+	Particula(ofVec3f pos, float mass, bool invertGrav);
 	void draw();
 	void update();
 	void applyForce(ofVec3f force);
@@ -22,7 +23,11 @@ public:
 	float tam = 4;
 	float limInf = 0;
 
-	void invierteGravedad();
-	bool invGrav;
-	int valGrav = 0.98;
+	/// COLOR PARTICULA
+	ofVec3f color = ofVec3f(255, 255, 255);
+	float colMono = 255;
+
+	//void invierteGravedad();
+	//bool invGrav;
+	float valGrav = -0.98;
 };

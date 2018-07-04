@@ -25,6 +25,8 @@ public:
 	//Particula part;
 	Particula partConfig;
 	vector<Particula> parts;
+
+	bool invierteGravedad;
 	
 	bool borra = true; // no se para que se esta usando actualmente
 

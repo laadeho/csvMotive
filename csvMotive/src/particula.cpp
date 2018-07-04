@@ -3,7 +3,8 @@
 #include "particula.h"
 
 Particula::Particula(void) {
-	
+	color = ofVec3f(255, 255, 255);
+	colMono = 255;
 }
 
 Particula::Particula(ofVec3f pos, float mass) {
@@ -12,25 +13,39 @@ Particula::Particula(ofVec3f pos, float mass) {
 	posicion = pos;
 	masa = mass;
 	muere = false;
-	tam = ofRandom(tam/2,tam);
+	tam = ofRandom(tam / 2, tam);
 
-	//aceleracion = ofVec3f(0, 0, 0);
+	aceleracion = ofVec3f(0, 0, 0);
 	velocidad = ofVec3f(ofRandom(-0.5, 0.5), 0, ofRandom(-0.5, 0.5));
 }
-void Particula::invierteGravedad() {
-	//valGrav *=-1;
-	//gravedad = ofVec3f(0, valGrav, 0);
+Particula::Particula(ofVec3f pos, float mass, bool invertGrav) {
+	if (invertGrav) {
+		valGrav *= -1;
+	}
+	gravedad = ofVec3f(0, valGrav, 0);
 
+	posicion = pos;
+	masa = mass;
+	muere = false;
+	tam = ofRandom(tam / 2, tam);
+
+	aceleracion = ofVec3f(0, 0, 0);
+	velocidad = ofVec3f(ofRandom(-0.5, 0.5), 0, ofRandom(-0.5, 0.5));
 }
+
 void Particula::update() {
 	velocidad += aceleracion;
 	posicion += velocidad;
 	aceleracion *= 0;
 
 	if (tam > 0)
-		tam -= 0.125;
+		tam -= 0.05;
 	else
 		muere = true;
+
+	if (colMono > 0) {
+		colMono-=5;
+	}
 
 	if (posicion.y < -20 || posicion.y > 2000) {
 		muere = true;
@@ -46,7 +61,7 @@ void Particula::applyForce(ofVec3f force) {
 
 void Particula::draw() {
 	ofPushStyle();
-	ofSetColor(255);
+	ofSetColor(colMono);
 	ofFill();
 	ofDrawCircle(posicion.x, posicion.y, posicion.z, tam);
 	ofPopStyle();

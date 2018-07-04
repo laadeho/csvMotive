@@ -30,11 +30,12 @@ public:
 	string encabezado;
 	int totalEtiquetas;
 	vector <string> linea;
+	vector<string> nameMarker; /// //////
 
-	bool dibujaMarkerSphere, dibujaMesh, creaParticulas;
+	bool dibujaMarkerSphere, dibujaMesh, creaParticulas, dibujaEtiqueta;
 	bool dibujaMarker, dibujaRigidMarker, dibujaBoneMarker, dibujaRigid, dibujaBone;
 
-	bool analiza = true;		// REVISAR SI SE ESTA OCUPANDO
+	bool anima;
 	int lineaAnalisis = 7;		// Slider inicio anim
 	int saltoLinea = 1;			// Velocidad / salto lectura
 	float escala = 1.0f;		// Slider flotante

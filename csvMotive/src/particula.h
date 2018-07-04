@@ -19,5 +19,6 @@ public:
 	float secondsInMove=1;
 
 	bool muere;
-	float tam;
+	float tam = 4;
+	float limInf = 0;
 };

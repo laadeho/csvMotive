@@ -19,7 +19,7 @@ void Analiza::analizaCSV() {
 	buffer = archivoCSV.readToBuffer(); // Se almacena el archivo
 	/// OPCION B
 	for (ofBuffer::Line it = buffer.getLines().begin(), end = buffer.getLines().end(); it != end; ++it) {
-	linea.push_back(*it);
+		linea.push_back(*it);
 	}
 	//ofLogNotice("Numero de Lineas: " + ofToString(linea.size()));
 	//////////////////////////
@@ -28,6 +28,13 @@ void Analiza::analizaCSV() {
 
 	vector<string> etiquetas = ofSplitString(linea[2], ","); // Se almacenan las etiquetas
 	totalEtiquetas = etiquetas.size();
+
+	vector<string> nameMarkerLinea = ofSplitString(linea[3], ",");
+	/*
+	ofLogNotice("Nombre de Markers: " + ofToString(linea[3]));
+	ofLogNotice("Tamanio de Markers: " + ofToString(nameMarker.size()));
+	ofLogNotice("Tamanio de Etiquetas: " + ofToString(etiquetas.size()));
+	*/
 
 	tagTransform = ofSplitString(linea[5], ",");
 
@@ -51,49 +58,47 @@ void Analiza::analizaCSV() {
 
 	/// Contador para vectores
 	int numMarker = 0, numRigidMarker = 0, numBoneMarker = 0, numRigid = 0, numBone = 0, numVacios = 0;
+	int cuentaNombres;
 
 	/// LEEMOS TODAS LAS ETIQUETAS
 	for (int i = 0; i < etiquetas.size(); i++) {
-	if (etiquetas[i] != "")
-	{
-	if (etiquetas[i] == "Marker" || etiquetas[i] == "Marker\r")
-	{
-	esMarker[i] = true;
-	numMarker++;
-	}
-	else if (etiquetas[i] == "Rigid Body Marker" || etiquetas[i] == "Rigid Body Marker\r") // 18
-	{
-	esRigidMarker[i] = true;
-	numRigidMarker++;
-	}
-	else if (etiquetas[i] == "Bone Marker" || etiquetas[i] == "Bone Marker\r")
-	{
-	esBoneMarker[i] = true;
-	numBoneMarker++;
-	}
-	else if (etiquetas[i] == "Rigid Body" || etiquetas[i] == "Rigid Body\r") // 6
-	{
-	esRigid[i] = true;
-	numRigid++;
-	}
-	else if (etiquetas[i] == "Bone" || etiquetas[i] == "Bone\r")
-	{
-	esBone[i] = true;
-	numBone++;
-	}
-	else
-	{
-	esRigid[i] = false;
-	esRigidMarker[i] = false;
-	esMarker[i] = false;
-	esBone[i] = false;
-	esBoneMarker[i] = false;
-	numVacios++;
-	}
-	}
-	else {
-	numVacios++;
-	}
+		if (etiquetas[i] != "")
+		{
+			if (etiquetas[i] == "Marker" || etiquetas[i] == "Marker\r")
+			{
+				esMarker[i] = true;
+				numMarker++;
+			}
+			else if (etiquetas[i] == "Rigid Body Marker" || etiquetas[i] == "Rigid Body Marker\r") // 18
+			{
+				esRigidMarker[i] = true;
+				numRigidMarker++;
+			}
+			else if (etiquetas[i] == "Bone Marker" || etiquetas[i] == "Bone Marker\r")
+			{
+				esBoneMarker[i] = true;
+				numBoneMarker++;
+			}
+			else if (etiquetas[i] == "Rigid Body" || etiquetas[i] == "Rigid Body\r") // 6
+			{
+				esRigid[i] = true;
+				numRigid++;
+			}
+			else if (etiquetas[i] == "Bone" || etiquetas[i] == "Bone\r")
+			{
+				esBone[i] = true;
+				numBone++;
+			}
+			else
+			{
+				esRigid[i] = false;
+				esRigidMarker[i] = false;
+				esMarker[i] = false;
+				esBone[i] = false;
+				esBoneMarker[i] = false;
+				numVacios++;
+			}
+		}
 	}
 
 	// IMPRIME Cantidad de etiquetas
@@ -132,7 +137,9 @@ void Analiza::update() {
 	int escribeRigid = 0, cuentaRigid = 0;
 
 	vector<string> valores = ofSplitString(linea[lineaAnalisis], ",");
-	lineaAnalisis += saltoLinea;
+
+	if(anima)
+		lineaAnalisis += saltoLinea;
 
 	if (lineaAnalisis % (linea.size() - 1) == 0 || lineaAnalisis > linea.size() - 1) {
 		lineaAnalisis = 7;

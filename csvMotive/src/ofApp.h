@@ -37,39 +37,10 @@ public:
 	ofxDatGui* gui;
 	void onDropdownEvent(ofxDatGuiDropdownEvent e);
 	void onToggleEvent(ofxDatGuiToggleEvent e);
+	void onSliderEvent(ofxDatGuiSliderEvent e);
 	bool showGui;
-
-
-	/*
-	ofFile editado;
-	ofBuffer buffer;
-	vector<string> coordenada;
-	vector<string> tagTransform;
-	// VECTORES
-	/// BOLEANOS
-	vector<bool> esMarker, esRigidMarker, esBoneMarker;		// Tipo de marker
-	vector<bool> esRigid, esBone;							// Tipo de objeto
-	vector<bool> esRot, esPos;								// Tipo de transformacion
-	///
-	vector<ofVec3f> markerPos;								// Marcadores sueltos
-	vector<ofVec3f> markerPosRigid;							// Marcadores de Rigid Body
-	vector<ofVec3f> markerPosBone;							// Marcadores de Bone
-	/// VECTORES TRANSFORMACIONES
-	vector<ofVec3f> rigidPos, rigidRot;						// Posicion y Rotacion de Rigid Body // CENTROIDE
-	vector<ofVec3f> bonePos, boneRot;						// Posicion y Rotacion de Bone // CENTROIDE
-
-	string encabezado;
-	int totalEtiquetas;
-	vector <string> linea;
-
-	bool dibujaMarkerSphere, dibujaMesh, creaParticulas;
-	bool dibujaMarker, dibujaRigidMarker, dibujaBoneMarker, dibujaRigid, dibujaBone;
-
-	bool analiza = true;		// REVISAR SI SE ESTA OCUPANDO
-	int lineaAnalisis = 7;		// Slider inicio anim
-	int saltoLinea = 1;			// Velocidad / salto lectura
-	float escala = 1.0f;		// Slider flotante
-	*/
+	
+	bool grid;
 
 	/// CAMARA
 	ofEasyCam cam;
@@ -78,6 +49,8 @@ public:
 	float angulo;
 	bool fs = true;
 	bool rota;
+
+	ofTrueTypeFont myfont;
 
 	/// LUCES
 	ofLight pointLight, light;

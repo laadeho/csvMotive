@@ -12,7 +12,7 @@ Particula::Particula(ofVec3f pos, float mass) {
 	posicion = pos;
 	masa = mass;
 	muere = false;
-	tam = ofRandom(3,5);
+	tam = ofRandom(tam/2,tam);
 
 	aceleracion = ofVec3f(0, -0.15, 0);
 	velocidad = ofVec3f(ofRandom(-0.1, 0.1), ofRandom(-0.5), ofRandom(-0.1, 0.1));

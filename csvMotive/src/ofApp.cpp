@@ -2,18 +2,13 @@
 int tiempo = 0;
 //--------------------------------------------------------------
 void ofApp::setup(){
-	/*
-	part = Particula(ofVec3f(0, 0, 0), 5);
-	part.setup();
-	*/
-
-	//analizaCSV();
 	setupGUI();
-
 	//ofSetFrameRate(120);
 	ofSetVerticalSync(true);
 	//ofSetBackgroundAuto(false);
 	
+	myfont.load("arial.ttf", 10);
+
 	/// MESH
 	mesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP_ADJACENCY);
 	//mesh.setMode(OF_PRIMITIVE_POINTS);
@@ -181,6 +176,11 @@ void ofApp::setupGUI() {	////////////// OFXDATGUI
 	gui->addLabel(": : : C  O  N  F  I  G  U  R  A  D  O  R : : :");
 
 	ofxDatGuiFolder* guiDatos = gui->addFolder(":: V I S U A L I Z A R ::", ofColor::blue);
+	guiDatos->addToggle("ETIQUETAS")->setChecked(false);
+	
+	ofxDatGuiSlider* slider = gui->addSlider("DIST CAM", 100, 1500, 500);
+	slider->onSliderEvent(this, &ofApp::onSliderEvent);
+
 	guiDatos->addToggle("PARTICULAS")->setChecked(false);
 	guiDatos->addToggle("MESH")->setChecked(false);
 	guiDatos->addToggle("MARKER SPHERE")->setChecked(false);
@@ -216,23 +216,15 @@ void ofApp::update() {
 
 	tiempo = int(ofGetElapsedTimef());
 
-	/*
-	std::stringstream strm;
-	strm << "fps: " << ofGetFrameRate();
-	ofSetWindowTitle(strm.str());
-	*/
+	if (debug) {
+		std::stringstream strm;
+		strm << "fps: " << ofGetFrameRate();
+		ofSetWindowTitle(strm.str());
+	}
 
-	//updateVal();
 	analiza.update();
 	updateMesh();	
 
-	//ofSaveScreen("Frame_"+ofToString(ofGetFrameNum()) + ".png");
-	/*if (ofGetFrameNum() > 10)
-	{
-		ofExit();
-		OF_EXIT_APP(0);
-		ofExitCallback();
-	}*/
 	/*
 	ofExit();
 	OF_EXIT_APP(0);
@@ -508,36 +500,58 @@ void ofApp::draw() {
 			//ofDrawArrow(markerPos[i], markerPos[i]*1.1, 15);
 			ofSetColor(200);
 			ofFill();
-			ofDrawIcoSphere(analiza.markerPos[i], 15);
-			ofSetColor(50);
-			ofNoFill();
+			ofDrawIcoSphere(analiza.markerPos[i], 5);
+			
 			ofPushMatrix();
 			ofTranslate(analiza.markerPos[i]);
 			ofRotateX(ofGetElapsedTimeMillis()*.05);
 			ofRotateY(ofGetElapsedTimeMillis()*.025);
-			ofDrawIcoSphere(ofPoint(0, 0, 0), 17);
+			
+			ofSetColor(150, 150);
+			ofNoFill(); 
+			ofDrawIcoSphere(ofPoint(0, 0, 0), 7);
+			
 			ofPopMatrix();
 		}
 	}
-
-	if (!analiza.creaParticulas) {
-		for (int i = 0; i < analiza.markerPos.size(); i++) {
-			//if(i%2==0)
-			parts.push_back(Particula(ofVec3f(analiza.markerPos[i].x, analiza.markerPos[i].y, analiza.markerPos[i].z), ofRandom(1,20)));
+	if (analiza.creaParticulas) {
+		if (ofGetFrameNum() % 3 == 0) {
+			for (int i = 0; i < analiza.markerPos.size(); i++) {
+				//if(i%4==0)
+				parts.push_back(Particula(ofVec3f(analiza.markerPos[i].x, analiza.markerPos[i].y, analiza.markerPos[i].z), ofRandom(1, 20)));
+			}
 		}
+	}
+
+	if (analiza.dibujaEtiqueta) {
+		/*for (int i = 0; i < analiza.nameMarker.size(); i++) {
+			//if (i < analiza.markerPos.size()) {
+				//ofDrawBitmapString(analiza.etiquetas[i], analiza.markerPos[i]);
+				//myfont.drawString(ofToString(analiza.markerPos[i]), analiza.markerPos[i].x, analiza.markerPos[i].y);
+			
+			ofPushMatrix();
+			ofTranslate(analiza.markerPos[i]);
+			myfont.drawString(ofToString(analiza.nameMarker[i]), 0, 0);
+			ofPopMatrix();
+			
+			//}
+		}*/
 	}
 
 	for (int i = 0; i < parts.size(); i++) {
 		parts[i].draw();
 	}
 
-	ofSetColor(50);
-	ofNoFill();
-	ofPushMatrix();
-	ofRotateX(90);
-	ofRotateY(90);
-	ofDrawGridPlane(100, 10, false);
-	ofPopMatrix();
+	
+	if (grid) {
+		ofSetColor(50);
+		ofNoFill();
+		ofPushMatrix();
+		ofRotateX(90);
+		ofRotateY(90);
+		ofDrawGridPlane(100, 10, false);
+		ofPopMatrix();
+	}
 
 	if (analiza.dibujaMesh) {
 		mesh.draw();
@@ -561,8 +575,7 @@ void ofApp::draw() {
 		ofDrawBitmapString("fps: " + ofToString(val), ofPoint(ofGetWindowWidth() - 200, ofGetWindowHeight() - 150));
 		ofDrawBitmapString("linea: " + ofToString(analiza.lineaAnalisis), ofPoint(ofGetWindowWidth() - 200, ofGetWindowHeight() - 130));
 		ofDrawBitmapString("tiempo: " + ofToString(tiempo), ofPoint(ofGetWindowWidth() - 200, ofGetWindowHeight() - 110));
-		//if(parts.size()!=NULL)
-			ofDrawBitmapString("Nparts: " + ofToString(parts.size()), ofPoint(ofGetWindowWidth() - 200, ofGetWindowHeight() - 90));
+		ofDrawBitmapString("Nparts: " + ofToString(parts.size()), ofPoint(ofGetWindowWidth() - 200, ofGetWindowHeight() - 90));
 	}
 }
 
@@ -583,6 +596,15 @@ void ofApp::keyPressed(int key) {
 		break;
 	case 'r':
 		rota = !rota;
+		break;
+	case 'a':
+		analiza.anima = !analiza.anima;
+		break;
+	case 'e':
+		analiza.dibujaEtiqueta = !analiza.dibujaEtiqueta;
+		break;
+	case 'g':
+		grid = !grid;
 		break;
 	case 'f':
 		fs = !fs;
@@ -622,6 +644,7 @@ void ofApp::windowResized(int w, int h) {
 void ofApp::onToggleEvent(ofxDatGuiToggleEvent e)
 {
 	if (e.target->is("DEBUG")) debug = !debug;
+	if (e.target->is("ETIQUETAS")) analiza.dibujaEtiqueta = !analiza.dibujaEtiqueta;
 	if (e.target->is("PARTICULAS")) analiza.creaParticulas = !analiza.creaParticulas;
 	if (e.target->is("MESH")) analiza.dibujaMesh = !analiza.dibujaMesh;
 	if (e.target->is("MARKER")) analiza.dibujaMarker = !analiza.dibujaMarker;
@@ -633,4 +656,8 @@ void ofApp::onToggleEvent(ofxDatGuiToggleEvent e)
 }
 void ofApp::onDropdownEvent(ofxDatGuiDropdownEvent e)
 {
+}
+void ofApp::onSliderEvent(ofxDatGuiSliderEvent e)
+{
+	distCam = e.value;
 }

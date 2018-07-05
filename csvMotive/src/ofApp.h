@@ -1,5 +1,4 @@
 #pragma once
-
 #include "ofMain.h"
 #include "ofUtils.h"
 #include <winsock2.h>
@@ -27,6 +26,7 @@ public:
 	vector<Particula> parts;
 
 	bool invierteGravedad;
+	float gravedad = 9.8;
 	
 	bool borra = true; // no se para que se esta usando actualmente
 

@@ -10,166 +10,174 @@ void Analiza::analizaCSV() {
 	ofFileDialogResult result = ofSystemLoadDialog("Selecciona un archivo csv para analizar");
 
 	if (result.bSuccess) {
-	string name = result.filePath;
-	//ofLogNotice("Se abre archivo: " + name);
+		string name = result.filePath;
+		//ofLogNotice("Se abre archivo: " + name);
 
-	ofFile archivoCSV;
-	archivoCSV.open(ofToDataPath(name), ofFile::ReadOnly, false);
+		ofFile archivoCSV;
+		archivoCSV.open(ofToDataPath(name), ofFile::ReadOnly, false);
 
-	buffer = archivoCSV.readToBuffer(); // Se almacena el archivo
-	/// OPCION B
-	for (ofBuffer::Line it = buffer.getLines().begin(), end = buffer.getLines().end(); it != end; ++it) {
-		linea.push_back(*it);
-	}
-	//ofLogNotice("Numero de Lineas: " + ofToString(linea.size()));
-	//////////////////////////
+		buffer = archivoCSV.readToBuffer(); // Se almacena el archivo
+		/// OPCION B
+		for (ofBuffer::Line it = buffer.getLines().begin(), end = buffer.getLines().end(); it != end; ++it) {
+			linea.push_back(*it);
+		}
+		//ofLogNotice("Numero de Lineas: " + ofToString(linea.size()));
+		//////////////////////////
 
-	encabezado = linea[0]; // Se lee el encabezado
-	vector<string> datosEncabezado = ofSplitString(linea[0], ",");
-	fpsFromFile = ofToInt(datosEncabezado[7]);
+		encabezado = linea[0]; // Se lee el encabezado
+		vector<string> datosEncabezado = ofSplitString(linea[0], ",");
+		fpsFromFile = ofToInt(datosEncabezado[7]);
 
-	vector<string> etiquetas = ofSplitString(linea[2], ","); // Se almacenan las etiquetas
-	totalEtiquetas = etiquetas.size();
+		vector<string> etiquetas = ofSplitString(linea[2], ","); // Se almacenan las etiquetas
+		totalEtiquetas = etiquetas.size();
 
-	vector<string> nameMarkerLinea = ofSplitString(linea[3], ",");
+		vector<string> nameMarkerLinea = ofSplitString(linea[3], ",");
 
-	//coordenada.resize(totalEtiquetas);
-	tagTransform = ofSplitString(linea[5], ",");
-	coordenada = ofSplitString(linea[6], ",");
+		//coordenada.resize(totalEtiquetas);
+		tagTransform = ofSplitString(linea[5], ",");
+		coordenada = ofSplitString(linea[6], ",");
 
-	// nameMarker
-	/*
-	int escribeNameMarker = 0;
-	int cuentaNameMarker = 0;
-	for(int i = 0; i < nameMarkerLinea.size(); i++) {
-		if (tagTransform[i] == "Rotation") {
-			if (coordenada[i] == "X")
-			{
-				cuentaNameMarker++;
+		// nameMarker
+		/*
+		int escribeNameMarker = 0;
+		int cuentaNameMarker = 0;
+		for(int i = 0; i < nameMarkerLinea.size(); i++) {
+			if (tagTransform[i] == "Rotation") {
+				if (coordenada[i] == "X")
+				{
+					cuentaNameMarker++;
+				}
+				else if (coordenada[i] == "Y")
+				{
+					cuentaNameMarker++;
+				}
+				else if (coordenada[i] == "Z" || coordenada[i] == "Z\r" || coordenada[i] == "Z\n")
+				{
+					cuentaNameMarker++;
+				}
+				else
+				{
+					return;
+				}
 			}
-			else if (coordenada[i] == "Y")
-			{
-				cuentaNameMarker++;
+			else if (tagTransform[i] == "Position") {
+				if (coordenada[i] == "X")
+				{
+					cuentaNameMarker++;
+					nameMarker.push_back(nameMarkerLinea[i]);
+				}
+				else if (coordenada[i] == "Y")
+				{
+					cuentaNameMarker++;
+				}
+				else if (coordenada[i] == "Z" || coordenada[i] == "Z\r" || coordenada[i] == "Z\n")
+				{
+					cuentaNameMarker++;
+				}
+				else
+				{
+					return;
+				}
 			}
-			else if (coordenada[i] == "Z" || coordenada[i] == "Z\r" || coordenada[i] == "Z\n")
+			ofLogNotice(nameMarker);
+			if (cuentaNameMarker % 3 == 0)
 			{
-				cuentaNameMarker++;
-			}
-			else
-			{
-				return;
+				escribeNameMarker++;
+				escribeNameMarker = escribeNameMarker % nameMarkerLinea.size(); /// posiblemente no sea necesario, dado que ésto solo corre una vez
 			}
 		}
-		else if (tagTransform[i] == "Position") {
-			if (coordenada[i] == "X")
+		*/
+
+		/// COMPROBACIONES DE ETIQUETAS Y ALMACENAMIENTO DE VALORES EN VARIABLES
+		esMarker.resize(etiquetas.size());
+		esRigidMarker.resize(etiquetas.size());
+		esBoneMarker.resize(etiquetas.size());
+
+		esRigid.resize(etiquetas.size());
+		esBone.resize(etiquetas.size());
+
+		esRot.resize(etiquetas.size());
+		esPos.resize(etiquetas.size());
+
+		/// Contador para vectores
+		int numMarker = 0, numRigidMarker = 0, numBoneMarker = 0, numRigid = 0, numBone = 0, numVacios = 0;
+		//int cuentaNombres;
+		int posB = 0, rotB = 0;
+
+		/// LEEMOS TODAS LAS ETIQUETAS
+		for (int i = 0; i < etiquetas.size(); i++) {
+			if (etiquetas[i] != "")
 			{
-				cuentaNameMarker++;
-				nameMarker.push_back(nameMarkerLinea[i]);
-			}
-			else if (coordenada[i] == "Y")
-			{
-				cuentaNameMarker++;
-			}
-			else if (coordenada[i] == "Z" || coordenada[i] == "Z\r" || coordenada[i] == "Z\n")
-			{
-				cuentaNameMarker++;
-			}
-			else
-			{
-				return;
+				if (etiquetas[i] == "Marker" || etiquetas[i] == "Marker\r")
+				{
+					esMarker[i] = true;
+					numMarker++;
+				}
+				else if (etiquetas[i] == "Rigid Body Marker" || etiquetas[i] == "Rigid Body Marker\r") // 18
+				{
+					esRigidMarker[i] = true;
+					numRigidMarker++;
+				}
+				else if (etiquetas[i] == "Bone Marker" || etiquetas[i] == "Bone Marker\r")
+				{
+					esBoneMarker[i] = true;
+					numBoneMarker++;
+				}
+				else if (etiquetas[i] == "Rigid Body" || etiquetas[i] == "Rigid Body\r") // 6
+				{
+					esRigid[i] = true;
+					numRigid++;
+				}
+				else if (etiquetas[i] == "Bone" || etiquetas[i] == "Bone\r")
+				{
+					if (tagTransform[i] == "Position") {
+						posB++;
+						esBone[i] = true;
+						numBone++;
+					}
+					else if (tagTransform[i] == "Rotation") {
+						rotB++;
+					}
+					// ofLogNotice("Pos: " + ofToString(posB)+", Rot: " + ofToString(rotB)); 
+					/// imprime 63 y 63 para el archivo de FERMIN
+				}
+				else
+				{
+					esRigid[i] = false;
+					esRigidMarker[i] = false;
+					esMarker[i] = false;
+					esBone[i] = false;
+					esBoneMarker[i] = false;
+					numVacios++;
+				}
 			}
 		}
-		ofLogNotice(nameMarker);
-		if (cuentaNameMarker % 3 == 0)
-		{
-			escribeNameMarker++;
-			escribeNameMarker = escribeNameMarker % nameMarkerLinea.size(); /// posiblemente no sea necesario, dado que ésto solo corre una vez
-		}
+
+		// IMPRIME Cantidad de etiquetas
+		/*if (debug) {
+		ofLogNotice("Total Etiquetas: " + ofToString(etiquetas.size()));
+		ofLogNotice("Num Marker: " + ofToString(numMarker));
+		ofLogNotice("Num RigidMarker: " + ofToString(numRigidMarker));
+		ofLogNotice("Num BoneMarker: " + ofToString(numBoneMarker));
+		ofLogNotice("Num Rigid: " + ofToString(numRigid));
+		ofLogNotice("Num Bone: " + ofToString(numBone));
+		ofLogNotice("Num Vacios: " + ofToString(numVacios));
+		ofLogNotice("Suma: " + ofToString(numMarker + numRigidMarker + numBoneMarker + numRigid + numBone + numVacios));
+		}*/
+
+		// VECTORES MARCADORES
+		/// MARCADORES
+		markerPos.resize(numMarker / 3); // 6 indices
+		markerPosBone.resize(numBoneMarker / 3); // 6 indices
+		markerPosRigid.resize(numRigidMarker / 3); // 6 indices
+
+		/// RIGID Posicion y Rotacion
+		rigidPos.resize(numRigid / 3); // 6 indices
+		rigidRot.resize(numRigid / 3); // 6 indices
+		/// BONE Posicion y Rotacion
+		//bonePos.resize(numBone / 3); // 6 indices /// el tamanio no es correcto dado que hay rotaciones
+		//boneRot.resize(numBone / 3); // 6 indices
 	}
-	*/
-
-	/// COMPROBACIONES DE ETIQUETAS Y ALMACENAMIENTO DE VALORES EN VARIABLES
-	esMarker.resize(etiquetas.size());
-	esRigidMarker.resize(etiquetas.size());
-	esBoneMarker.resize(etiquetas.size());
-
-	esRigid.resize(etiquetas.size());
-	esBone.resize(etiquetas.size());
-
-	esRot.resize(etiquetas.size());
-	esPos.resize(etiquetas.size());
-
-	/// Contador para vectores
-	int numMarker = 0, numRigidMarker = 0, numBoneMarker = 0, numRigid = 0, numBone = 0, numVacios = 0;
-	int cuentaNombres;
-
-	/// LEEMOS TODAS LAS ETIQUETAS
-	for (int i = 0; i < etiquetas.size(); i++) {
-		if (etiquetas[i] != "")
-		{
-			if (etiquetas[i] == "Marker" || etiquetas[i] == "Marker\r")
-			{
-				esMarker[i] = true;
-				numMarker++;
-			}
-			else if (etiquetas[i] == "Rigid Body Marker" || etiquetas[i] == "Rigid Body Marker\r") // 18
-			{
-				esRigidMarker[i] = true;
-				numRigidMarker++;
-			}
-			else if (etiquetas[i] == "Bone Marker" || etiquetas[i] == "Bone Marker\r")
-			{
-				esBoneMarker[i] = true;
-				numBoneMarker++;
-			}
-			else if (etiquetas[i] == "Rigid Body" || etiquetas[i] == "Rigid Body\r") // 6
-			{
-				esRigid[i] = true;
-				numRigid++;
-			}
-			else if (etiquetas[i] == "Bone" || etiquetas[i] == "Bone\r")
-			{
-				esBone[i] = true;
-				numBone++;
-			}
-			else
-			{
-				esRigid[i] = false;
-				esRigidMarker[i] = false;
-				esMarker[i] = false;
-				esBone[i] = false;
-				esBoneMarker[i] = false;
-				numVacios++;
-			}
-		}
-	}
-
-	// IMPRIME Cantidad de etiquetas
-	/*if (debug) {
-	ofLogNotice("Total Etiquetas: " + ofToString(etiquetas.size()));
-	ofLogNotice("Num Marker: " + ofToString(numMarker));
-	ofLogNotice("Num RigidMarker: " + ofToString(numRigidMarker));
-	ofLogNotice("Num BoneMarker: " + ofToString(numBoneMarker));
-	ofLogNotice("Num Rigid: " + ofToString(numRigid));
-	ofLogNotice("Num Bone: " + ofToString(numBone));
-	ofLogNotice("Num Vacios: " + ofToString(numVacios));
-	ofLogNotice("Suma: " + ofToString(numMarker + numRigidMarker + numBoneMarker + numRigid + numBone + numVacios));
-	}*/
-
-	// VECTORES MARCADORES
-	/// MARCADORES
-	markerPos.resize(numMarker / 3); // 6 indices
-	markerPosBone.resize(numBoneMarker / 3); // 6 indices
-	markerPosRigid.resize(numRigidMarker / 3); // 6 indices
-
-	/// RIGID Posicion y Rotacion
-	rigidPos.resize(numRigid / 3); // 6 indices
-	rigidRot.resize(numRigid / 3); // 6 indices
-	/// BONE Posicion y Rotacion
-	bonePos.resize(numBone / 3); // 6 indices
-	boneRot.resize(numBone / 3); // 6 indices
-	}
-
 }
 
 void Analiza::update() {
@@ -177,16 +185,19 @@ void Analiza::update() {
 	int escribeMarkerBone = 0, cuentaMarkerBone = 0;
 	int escribeMarkerRigid = 0, cuentaMarkerRigid = 0;
 	int escribeBone = 0, cuentaBone = 0;
+	int escribeBoneR = 0, cuentaBoneR = 0;
 	int escribeRigid = 0, cuentaRigid = 0;
 
 	vector<string> valores = ofSplitString(linea[lineaAnalisis], ",");
 
-	if(anima)
+	if (anima)
 		lineaAnalisis += saltoLinea;
 
 	if (lineaAnalisis % (linea.size() - 1) == 0 || lineaAnalisis > linea.size() - 1) {
 		lineaAnalisis = 7;
 	}
+	float tx = 0, ty = 0, tz = 0;
+	float txr = 0, tyr = 0, tzr = 0;
 
 	for (int i = 0; i < totalEtiquetas; i++)
 	{
@@ -321,19 +332,24 @@ void Analiza::update() {
 			if (valores[i] != "")
 			{
 				if (tagTransform[i] == "Position") {
+					
 					if (coordenada[i] == "X")
 					{
-						bonePos[escribeBone].x = ofToFloat(valores[i]) * escala;
+						//bonePos.push_back()
+						tx = ofToFloat(valores[i]) * escala;
+						//bonePos[escribeBone].x = ofToFloat(valores[i]) * escala;
 						cuentaBone++;
 					}
 					else if (coordenada[i] == "Y")
 					{
-						bonePos[escribeBone].y = ofToFloat(valores[i]) * escala;
+						ty = ofToFloat(valores[i]) * escala;
+						//bonePos[escribeBone].y = ofToFloat(valores[i]) * escala;
 						cuentaBone++;
 					}
 					else if (coordenada[i] == "Z" || coordenada[i] == "Z\r" || coordenada[i] == "Z\n")
 					{
-						bonePos[escribeBone].z = ofToFloat(valores[i]) * escala;
+						tz = ofToFloat(valores[i]) * escala;
+						//bonePos[escribeBone].z = ofToFloat(valores[i]) * escala;
 						cuentaBone++;
 					}
 					else
@@ -343,10 +359,42 @@ void Analiza::update() {
 
 					if (cuentaBone % 3 == 0)
 					{
+						bonePos.push_back(ofPoint(tx, ty, tz));
 						escribeBone++;
 						escribeBone = escribeBone % bonePos.size();
 					}
 				}
+				/*else if (tagTransform[i] == "Rotation") {
+					if (coordenada[i] == "X")
+					{
+						txr = ofToFloat(valores[i]);
+						//boneRot[escribeBoneR].x = ofToFloat(valores[i]);
+						cuentaBoneR++;
+					}
+					else if (coordenada[i] == "Y")
+					{
+						tyr = ofToFloat(valores[i]);
+						//boneRot[escribeBoneR].y = ofToFloat(valores[i]);
+						cuentaBoneR++;
+					}
+					else if (coordenada[i] == "Z" || coordenada[i] == "Z\r" || coordenada[i] == "Z\n")
+					{
+						tzr = ofToFloat(valores[i]);
+						//boneRot[escribeBoneR].z = ofToFloat(valores[i]);
+						cuentaBoneR++;
+					}
+					else
+					{
+						return;
+					}
+
+					if (cuentaBoneR % 3 == 0)
+					{
+						boneRot.push_back(ofPoint(txr, tyr, tzr));
+						escribeBoneR++;
+						escribeBoneR = escribeBoneR % boneRot.size();
+					}
+				}*/
 			}
 		}
 	}

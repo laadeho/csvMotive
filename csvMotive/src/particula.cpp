@@ -3,12 +3,11 @@
 #include "particula.h"
 
 Particula::Particula(void) {
-	color = ofVec3f(255, 255, 255);
-	colMono = 255;
+	//gravedad = ofVec3f(0, -valGrav, 0);
 }
 
 Particula::Particula(ofVec3f pos, float mass) {
-	gravedad = ofVec3f(0, valGrav, 0);
+	gravedad = ofVec3f(0, -valGrav, 0);
 
 	posicion = pos;
 	masa = mass;
@@ -32,7 +31,30 @@ Particula::Particula(ofVec3f pos, float mass, bool invertGrav) {
 	aceleracion = ofVec3f(0, 0, 0);
 	velocidad = ofVec3f(ofRandom(-0.5, 0.5), 0, ofRandom(-0.5, 0.5));
 }
+Particula::Particula(ofVec3f pos, float mass, bool invertGrav, float g) {
+	valGrav = g;
+	if (invertGrav) {
+		valGrav *= -1;
+	}
+	gravedad = ofVec3f(0, valGrav, 0);
 
+	posicion = pos;
+	masa = mass;
+	muere = false;
+	tam = ofRandom(tam / 2, tam);
+
+	aceleracion = ofVec3f(0, 0, 0);
+	velocidad = ofVec3f(ofRandom(-0.5, 0.5), 0, ofRandom(-0.5, 0.5));
+}
+
+void Particula::setup(float g) {
+	valGrav = g;
+	//ofLogNotice("VAL GRAV: " + ofToString(valGrav));
+}
+void Particula::setGravedad(float g) {
+	valGrav = g;
+	//ofLogNotice("VAL GRAV: " + ofToString(valGrav));
+}
 void Particula::update() {
 	velocidad += aceleracion;
 	posicion += velocidad;

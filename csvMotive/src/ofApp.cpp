@@ -184,6 +184,9 @@ void ofApp::setupGUI() {	////////////// OFXDATGUI
 	ofxDatGuiSlider* slider = gui->addSlider("DIST CAM", 100, 1500, 500);
 	slider->onSliderEvent(this, &ofApp::onSliderEvent);
 
+	ofxDatGuiSlider* sliGrav = gui->addSlider("GRAVEDAD", 0.1, 20, 9.8);
+	sliGrav->onSliderEvent(this, &ofApp::onSliderEvent);
+
 	guiDatos->addToggle("GRAVEDAD")->setChecked(false);
 	guiDatos->addToggle("PARTICULAS")->setChecked(false);
 	guiDatos->addToggle("MESH")->setChecked(false);
@@ -243,187 +246,6 @@ void ofApp::update() {
 	if (rota)
 		angulo += 0.005;
 }
-
-//--------------------------------------------------------------
-/*
-void ofApp::updateVal() {
-	int escribeMarker = 0, cuentaMarker = 0;
-	int escribeMarkerBone = 0, cuentaMarkerBone = 0;
-	int escribeMarkerRigid = 0, cuentaMarkerRigid = 0;
-	int escribeBone = 0, cuentaBone = 0;
-	int escribeRigid = 0, cuentaRigid = 0;
-
-	vector<string> valores = ofSplitString(linea[lineaAnalisis], ",");
-	lineaAnalisis += saltoLinea;
-
-	if (lineaAnalisis % (linea.size() - 1) == 0 || lineaAnalisis > linea.size() - 1) {
-		lineaAnalisis = 7;
-	}
-
-	for (int i = 0; i < totalEtiquetas; i++)
-	{
-		if (esMarker[i])
-		{
-			if (valores[i] != "")
-			{
-				if (coordenada[i] == "X")
-				{
-					markerPos[escribeMarker].x = ofToFloat(valores[i]) * escala;
-					cuentaMarker++;
-				}
-				else if (coordenada[i] == "Y")
-				{
-					markerPos[escribeMarker].y = ofToFloat(valores[i]) * escala;
-					cuentaMarker++;
-				}
-				else if (coordenada[i] == "Z" || valores[i] == "Z\r" || valores[i] == "Z\n")
-				{
-					markerPos[escribeMarker].z = ofToFloat(valores[i]) * escala;
-					cuentaMarker++;
-				}
-				else
-				{
-					return;
-				}
-
-				if (cuentaMarker % 3 == 0)
-				{
-					escribeMarker++;
-					escribeMarker = escribeMarker % markerPos.size();
-				}
-			}
-		}
-		else if (esRigidMarker[i])
-		{
-			if (valores[i] != "")
-			{
-				if (coordenada[i] == "X")
-				{
-					markerPosRigid[escribeMarkerRigid].x = ofToFloat(valores[i]) * escala;
-					cuentaMarkerRigid++;
-				}
-				else if (coordenada[i] == "Y")
-				{
-					markerPosRigid[escribeMarkerRigid].y = ofToFloat(valores[i]) * escala;
-					cuentaMarkerRigid++;
-				}
-				else if (coordenada[i] == "Z" || valores[i] == "Z\r" || valores[i] == "Z\n")
-				{
-					markerPosRigid[escribeMarkerRigid].z = ofToFloat(valores[i]) * escala;
-					cuentaMarkerRigid++;
-				}
-				else
-				{
-					return;
-				}
-
-				if (cuentaMarkerRigid % 3 == 0)
-				{
-					escribeMarkerRigid++;
-					escribeMarkerRigid = escribeMarkerRigid % markerPosRigid.size();
-				}
-			}
-		}
-		else if (esBoneMarker[i])
-		{
-			if (valores[i] != "")
-			{
-				if (coordenada[i] == "X")
-				{
-					markerPosBone[escribeMarkerBone].x = ofToFloat(valores[i]) * escala;
-					cuentaMarkerBone++;
-				}
-				else if (coordenada[i] == "Y")
-				{
-					markerPosBone[escribeMarkerBone].y = ofToFloat(valores[i]) * escala;
-					cuentaMarkerBone++;
-				}
-				else if (coordenada[i] == "Z" || valores[i] == "Z\r" || valores[i] == "Z\n")
-				{
-					markerPosBone[escribeMarkerBone].z = ofToFloat(valores[i]) * escala;
-					cuentaMarkerBone++;
-				}
-				else
-				{
-					return;
-				}
-
-				if (cuentaMarkerBone % 3 == 0)
-				{
-					escribeMarkerBone++;
-					escribeMarkerBone = escribeMarkerBone % markerPosBone.size();
-				}
-			}
-		}
-		else if (esRigid[i])
-		{
-			if (valores[i] != "")
-			{
-				if (tagTransform[i] == "Position") {
-					if (coordenada[i] == "X")
-					{
-						rigidPos[escribeRigid].x = ofToFloat(valores[i]) * escala;
-						cuentaRigid++;
-					}
-					else if (coordenada[i] == "Y")
-					{
-						rigidPos[escribeRigid].y = ofToFloat(valores[i]) * escala;
-						cuentaRigid++;
-					}
-					else if (coordenada[i] == "Z" || valores[i] == "Z\r" || valores[i] == "Z\n")
-					{
-						rigidPos[escribeRigid].z = ofToFloat(valores[i]) * escala;
-						cuentaRigid++;
-					}
-					else
-					{
-						return;
-					}
-
-					if (cuentaRigid % 3 == 0)
-					{
-						escribeRigid++;
-						escribeRigid = escribeRigid % rigidPos.size();
-					}
-				}
-			}
-		}
-		else if (esBone[i])
-		{
-			if (valores[i] != "")
-			{
-				if (tagTransform[i] == "Position") {
-					if (coordenada[i] == "X")
-					{
-						bonePos[escribeBone].x = ofToFloat(valores[i]) * escala;
-						cuentaBone++;
-					}
-					else if (coordenada[i] == "Y")
-					{
-						bonePos[escribeBone].y = ofToFloat(valores[i]) * escala;
-						cuentaBone++;
-					}
-					else if (coordenada[i] == "Z" || valores[i] == "Z\r" || valores[i] == "Z\n")
-					{
-						bonePos[escribeBone].z = ofToFloat(valores[i]) * escala;
-						cuentaBone++;
-					}
-					else
-					{
-						return;
-					}
-
-					if (cuentaBone % 3 == 0)
-					{
-						escribeBone++;
-						escribeBone = escribeBone % bonePos.size();
-					}
-				}
-			}
-		}
-	}
-}
-*/
 
 //--------------------------------------------------------------
 void ofApp::updateMesh() {
@@ -488,14 +310,23 @@ void ofApp::draw() {
 			ofDrawEllipse(analiza.rigidPos[i], 5, 5);
 		}
 	}
+	
 	if (analiza.dibujaBone) {
-		ofSetColor(0, 255, 255);
+		ofSetColor(0, 255, 0);
 		ofFill();
 		for (int i = 0; i < analiza.bonePos.size(); i++) {
-			ofDrawEllipse(analiza.bonePos[i], 5, 5);
-			ofBox(analiza.bonePos[i], 20, 100, 20);
+			//ofDrawEllipse(analiza.bonePos[i], 5, 5);
+			ofPushMatrix();
+			ofTranslate(analiza.bonePos[i]);
+			/*ofRotateX(analiza.boneRot[i].x);
+			ofRotateY(analiza.boneRot[i].x);
+			ofRotateZ(analiza.boneRot[i].y);*/
+
+			ofBox(ofPoint(0, 0, 0), 5, 20, 5);
+			ofPopMatrix();
 		}
 	}
+	
 	if (analiza.dibujaMarkerSphere) {
 		ofSetIcoSphereResolution(3); /// ///////////////////////
 		for (int i = 0; i < analiza.markerPos.size(); i++) {
@@ -519,30 +350,28 @@ void ofApp::draw() {
 		}
 	}
 	if (analiza.creaParticulas) {
-		if (ofGetFrameNum() % 3 == 0) {
+		//if (ofGetFrameNum() % 3 == 0) {
 			for (int i = 0; i < analiza.markerPos.size(); i++) {
 				//if(i%4==0)
 				//parts.push_back(Particula(ofVec3f(analiza.markerPos[i].x, analiza.markerPos[i].y, analiza.markerPos[i].z), ofRandom(1, 20)));
-				parts.push_back(Particula(ofVec3f(analiza.markerPos[i].x, analiza.markerPos[i].y, analiza.markerPos[i].z), 20, invierteGravedad));
-			}
-		}
-	}
-
-	/*if (analiza.dibujaEtiqueta) {
-		for (int i = 0; i < analiza.nameMarker.size(); i++) {
-			//if (i < analiza.markerPos.size()) {
-				//ofDrawBitmapString(analiza.etiquetas[i], analiza.markerPos[i]);
-				//myfont.drawString(ofToString(analiza.markerPos[i]), analiza.markerPos[i].x, analiza.markerPos[i].y);
-			
-			ofPushMatrix();
-			ofTranslate(analiza.markerPos[i]);
-			myfont.drawString(ofToString(analiza.nameMarker[i]), 0, 0);
-			ofPopMatrix();
-			
+				parts.push_back(Particula(ofVec3f(analiza.markerPos[i].x, analiza.markerPos[i].y, analiza.markerPos[i].z), 20, invierteGravedad, gravedad));
 			//}
 		}
 	}
-	*/
+
+	if (analiza.dibujaEtiqueta) {
+		ofColor(255);
+		ofFill();
+		for (int i = 0; i < analiza.bonePos.size(); i++) {
+			if (i < 19) {
+				ofPushMatrix();
+				ofTranslate(analiza.bonePos[i]);
+				myfont.drawString(ofToString(i), 0, 0);
+				ofPopMatrix();
+			}
+		}
+	}
+	
 	for (int i = 0; i < parts.size(); i++) {
 		parts[i].draw();
 	}
@@ -564,6 +393,7 @@ void ofApp::draw() {
 		ofNoFill();
 		meshLines.draw();
 	}
+	
 	
 	light.disable();
 	pointLight.disable();
@@ -671,5 +501,6 @@ void ofApp::onDropdownEvent(ofxDatGuiDropdownEvent e)
 }
 void ofApp::onSliderEvent(ofxDatGuiSliderEvent e)
 {
-	distCam = e.value;
+	if (e.target->is("DIST CAM")) distCam = e.value;
+	if (e.target->is("GRAVEDAD")) gravedad = e.value;
 }

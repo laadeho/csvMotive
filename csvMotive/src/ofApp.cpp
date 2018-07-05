@@ -315,15 +315,23 @@ void ofApp::draw() {
 		ofSetColor(0, 255, 0);
 		ofFill();
 		for (int i = 0; i < analiza.bonePos.size(); i++) {
-			//ofDrawEllipse(analiza.bonePos[i], 5, 5);
-			ofPushMatrix();
-			ofTranslate(analiza.bonePos[i]);
-			/*ofRotateX(analiza.boneRot[i].x);
-			ofRotateY(analiza.boneRot[i].x);
-			ofRotateZ(analiza.boneRot[i].y);*/
+			if (i <= 18) {
+				//ofDrawEllipse(analiza.bonePos[i], 5, 5);
+				ofPushMatrix();
+				ofTranslate(analiza.bonePos[i]);
+				if (i >= 3 && i <= 12 && i != 4) {
+					analiza.boneRot[i] += ofVec3f(0, 0, 90);
+				}
+				ofRotateX(analiza.boneRot[i].x);
+				ofRotateY(analiza.boneRot[i].y);
+				ofRotateZ(analiza.boneRot[i].z);
 
-			ofBox(ofPoint(0, 0, 0), 5, 20, 5);
-			ofPopMatrix();
+				//if (i < analiza.boneRot.size()) {
+
+				//}
+				ofBox(ofPoint(0, 0, 0), 5, 20, 5);
+				ofPopMatrix();
+			}
 		}
 	}
 	

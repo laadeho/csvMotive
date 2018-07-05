@@ -101,8 +101,8 @@ void Analiza::analizaCSV() {
 
 		/// Contador para vectores
 		int numMarker = 0, numRigidMarker = 0, numBoneMarker = 0, numRigid = 0, numBone = 0, numVacios = 0;
-		//int cuentaNombres;
-		int posB = 0, rotB = 0;
+
+		int cuentaBone = 0, cuentaBoneR = 0;
 
 		/// LEEMOS TODAS LAS ETIQUETAS
 		for (int i = 0; i < etiquetas.size(); i++) {
@@ -131,12 +131,55 @@ void Analiza::analizaCSV() {
 				else if (etiquetas[i] == "Bone" || etiquetas[i] == "Bone\r")
 				{
 					if (tagTransform[i] == "Position") {
-						posB++;
 						esBone[i] = true;
 						numBone++;
+
+						if (coordenada[i] == "X")
+						{
+							cuentaBone++;
+						}
+						else if (coordenada[i] == "Y")
+						{
+							cuentaBone++;
+						}
+						else if (coordenada[i] == "Z" || coordenada[i] == "Z\r" || coordenada[i] == "Z\n")
+						{
+							cuentaBone++;
+						}
+						else
+						{
+							return;
+						}
+
+						if (cuentaBone % 3 == 0)
+						{
+							bonePos.push_back(ofPoint(0, 0, 0));
+						}
 					}
 					else if (tagTransform[i] == "Rotation") {
-						rotB++;
+						esBone[i] = true;
+						numBone++;
+						if (coordenada[i] == "X")
+						{
+							cuentaBoneR++;
+						}
+						else if (coordenada[i] == "Y")
+						{
+							cuentaBoneR++;
+						}
+						else if (coordenada[i] == "Z" || coordenada[i] == "Z\r" || coordenada[i] == "Z\n")
+						{
+							cuentaBoneR++;
+						}
+						else
+						{
+							return;
+						}
+
+						if (cuentaBoneR % 3 == 0)
+						{
+							boneRot.push_back(ofPoint(0, 0, 0));
+						}
 					}
 					// ofLogNotice("Pos: " + ofToString(posB)+", Rot: " + ofToString(rotB)); 
 					/// imprime 63 y 63 para el archivo de FERMIN
@@ -152,6 +195,65 @@ void Analiza::analizaCSV() {
 				}
 			}
 		}
+		//int cuentaBone = 0, cuentaBoneR = 0;
+		/*for (int i = 0; i < totalEtiquetas; i++) {
+			if (esBone[i])
+			{
+				if (tagTransform[i] == "Position") {
+					if (coordenada[i] == "X")
+					{
+						cuentaBone++;
+					}
+					else if (coordenada[i] == "Y")
+					{
+						cuentaBone++;
+					}
+					else if (coordenada[i] == "Z" || coordenada[i] == "Z\r" || coordenada[i] == "Z\n")
+					{
+						cuentaBone++;
+					}
+					else
+					{
+						return;
+					}
+
+					if (cuentaBone % 3 == 0)
+					{
+						bonePos.push_back(ofPoint(0,0,0));
+						ofLogNotice("va un Pos: " + ofToString(bonePos.size()));
+
+					}
+				}
+				if (tagTransform[i] == "Rotation") {
+					if (coordenada[i] == "X")
+					{
+						cuentaBoneR++;
+					}
+					else if (coordenada[i] == "Y")
+					{
+						cuentaBoneR++;
+					}
+					else if (coordenada[i] == "Z" || coordenada[i] == "Z\r" || coordenada[i] == "Z\n")
+					{
+						cuentaBoneR++;
+					}
+					else
+					{
+						return;
+					}
+
+					if (cuentaBoneR % 3 == 0)
+					{
+						boneRot.push_back(ofPoint(0,0,0));
+						ofLogNotice("va un Rot: "+ofToString(boneRot.size()));
+
+					}
+				}
+			}
+		}
+		*/
+		ofLogNotice("Pos: "+ofToString(bonePos.size()));
+		ofLogNotice("Rot: "+ofToString(boneRot.size()));
 
 		// IMPRIME Cantidad de etiquetas
 		/*if (debug) {
@@ -332,7 +434,6 @@ void Analiza::update() {
 			if (valores[i] != "")
 			{
 				if (tagTransform[i] == "Position") {
-					
 					if (coordenada[i] == "X")
 					{
 						//bonePos.push_back()
@@ -359,28 +460,26 @@ void Analiza::update() {
 
 					if (cuentaBone % 3 == 0)
 					{
-						bonePos.push_back(ofPoint(tx, ty, tz));
+						//bonePos.push_back(ofPoint(tx, ty, tz));
+						bonePos[escribeBone] = ofPoint(tx, ty, tz);
 						escribeBone++;
 						escribeBone = escribeBone % bonePos.size();
 					}
 				}
-				/*else if (tagTransform[i] == "Rotation") {
+				else if (tagTransform[i] == "Rotation") {
 					if (coordenada[i] == "X")
 					{
 						txr = ofToFloat(valores[i]);
-						//boneRot[escribeBoneR].x = ofToFloat(valores[i]);
 						cuentaBoneR++;
 					}
 					else if (coordenada[i] == "Y")
 					{
 						tyr = ofToFloat(valores[i]);
-						//boneRot[escribeBoneR].y = ofToFloat(valores[i]);
 						cuentaBoneR++;
 					}
 					else if (coordenada[i] == "Z" || coordenada[i] == "Z\r" || coordenada[i] == "Z\n")
 					{
 						tzr = ofToFloat(valores[i]);
-						//boneRot[escribeBoneR].z = ofToFloat(valores[i]);
 						cuentaBoneR++;
 					}
 					else
@@ -390,14 +489,15 @@ void Analiza::update() {
 
 					if (cuentaBoneR % 3 == 0)
 					{
-						boneRot.push_back(ofPoint(txr, tyr, tzr));
+						boneRot[escribeBone] = ofPoint(txr, tyr, tzr);
 						escribeBoneR++;
 						escribeBoneR = escribeBoneR % boneRot.size();
 					}
-				}*/
+				}
 			}
 		}
 	}
+	//ofLogNotice("Pos: " + ofToString(bonePos[0]) + ", Rot: " + ofToString(boneRot[0]));
 }
 
 

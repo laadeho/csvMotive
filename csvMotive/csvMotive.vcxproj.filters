@@ -22,6 +22,9 @@
     <ClCompile Include="src\Analiza.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\BuildMesh.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
@@ -123,6 +126,9 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\Analiza.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\BuildMesh.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>

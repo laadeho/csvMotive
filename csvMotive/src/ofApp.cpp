@@ -36,6 +36,7 @@ void ofApp::setup(){
 		//meshLines.addIndex(i + 2);
 	}
 	
+	bMesh.setup(analiza.bonePos);
 	/// CAMARA
 	cam.disableMouseInput();
 
@@ -47,126 +48,6 @@ void ofApp::setup(){
 
 	ofSetFrameRate(analiza.fpsFromFile);
 }
-
-/*
-void ofApp::analizaCSV() {
-	ofFileDialogResult result = ofSystemLoadDialog("Selecciona un archivo csv para analizar");
-
-	if (result.bSuccess) {
-		string name = result.filePath;
-		//ofLogNotice("Se abre archivo: " + name);
-
-		ofFile archivoCSV;
-		archivoCSV.open(ofToDataPath(name), ofFile::ReadOnly, false);
-
-		buffer = archivoCSV.readToBuffer(); // Se almacena el archivo
-		/// OPCION B
-		for (ofBuffer::Line it = buffer.getLines().begin(), end = buffer.getLines().end(); it != end; ++it) {
-			linea.push_back(*it);
-		}
-		//ofLogNotice("Numero de Lineas: " + ofToString(linea.size()));
-		//////////////////////////
-
-		encabezado = linea[0]; // Se lee el encabezado
-
-		vector<string> etiquetas = ofSplitString(linea[2], ","); // Se almacenan las etiquetas
-		totalEtiquetas = etiquetas.size();
-
-		tagTransform = ofSplitString(linea[5], ",");
-
-		if (debug) {
-			ofLogNotice("ENCABEZADO: " + encabezado);
-			//ofLogNotice("" + e);
-			ofLogNotice("ETIQUETAS: " + ofToString(etiquetas));
-			ofLogNotice("TRANSFORMACIONES: " + ofToString(tagTransform));
-		}
-		coordenada.resize(totalEtiquetas);
-		/// COMPROBACIONES DE ETIQUETAS Y ALMACENAMIENTO DE VALORES EN VARIABLES
-		esMarker.resize(etiquetas.size());
-		esRigidMarker.resize(etiquetas.size());
-		esBoneMarker.resize(etiquetas.size());
-
-		esRigid.resize(etiquetas.size());
-		esBone.resize(etiquetas.size());
-
-		esRot.resize(etiquetas.size());
-		esPos.resize(etiquetas.size());
-
-		/// Contador para vectores
-		int numMarker = 0, numRigidMarker = 0, numBoneMarker = 0, numRigid = 0, numBone = 0, numVacios = 0;
-
-		/// LEEMOS TODAS LAS ETIQUETAS
-		for (int i = 0; i < etiquetas.size(); i++) {
-			if (etiquetas[i] != "")
-			{
-				if (etiquetas[i] == "Marker" || etiquetas[i] == "Marker\r")
-				{
-					esMarker[i] = true;
-					numMarker++;
-				}
-				else if (etiquetas[i] == "Rigid Body Marker" || etiquetas[i] == "Rigid Body Marker\r") // 18
-				{
-					esRigidMarker[i] = true;
-					numRigidMarker++;
-				}
-				else if (etiquetas[i] == "Bone Marker" || etiquetas[i] == "Bone Marker\r")
-				{
-					esBoneMarker[i] = true;
-					numBoneMarker++;
-				}
-				else if (etiquetas[i] == "Rigid Body" || etiquetas[i] == "Rigid Body\r") // 6
-				{
-					esRigid[i] = true;
-					numRigid++;
-				}
-				else if (etiquetas[i] == "Bone" || etiquetas[i] == "Bone\r")
-				{
-					esBone[i] = true;
-					numBone++;
-				}
-				else
-				{
-					esRigid[i] = false;
-					esRigidMarker[i] = false;
-					esMarker[i] = false;
-					esBone[i] = false;
-					esBoneMarker[i] = false;
-					numVacios++;
-				}
-			}
-			else {
-				numVacios++;
-			}
-		}
-
-		// IMPRIME Cantidad de etiquetas
-		if (debug) {
-			ofLogNotice("Total Etiquetas: " + ofToString(etiquetas.size()));
-			ofLogNotice("Num Marker: " + ofToString(numMarker));
-			ofLogNotice("Num RigidMarker: " + ofToString(numRigidMarker));
-			ofLogNotice("Num BoneMarker: " + ofToString(numBoneMarker));
-			ofLogNotice("Num Rigid: " + ofToString(numRigid));
-			ofLogNotice("Num Bone: " + ofToString(numBone));
-			ofLogNotice("Num Vacios: " + ofToString(numVacios));
-			ofLogNotice("Suma: " + ofToString(numMarker + numRigidMarker + numBoneMarker + numRigid + numBone + numVacios));
-		}
-
-		// VECTORES MARCADORES
-		/// MARCADORES
-		markerPos.resize(numMarker / 3); // 6 indices
-		markerPosBone.resize(numBoneMarker / 3); // 6 indices
-		markerPosRigid.resize(numRigidMarker / 3); // 6 indices
-
-		/// RIGID Posicion y Rotacion
-		rigidPos.resize(numRigid / 3); // 6 indices
-		rigidRot.resize(numRigid / 3); // 6 indices
-									   /// BONE Posicion y Rotacion
-		bonePos.resize(numBone / 3); // 6 indices
-		boneRot.resize(numBone / 3); // 6 indices
-	}
-	coordenada = ofSplitString(linea[6], ",");
-}
-*/
 
 /*--- GUI --------------------------------------*/
 void ofApp::setupGUI() {	////////////// OFXDATGUI
@@ -239,12 +120,16 @@ void ofApp::update() {
 	*/
 
 	/// CAMARA
-	cam.setPosition(posCam);
-	cam.setTarget(ofVec3f(0, 150, 0));
-	posCam = ofVec3f(sin(angulo)*distCam, 165, cos(angulo) * distCam);
+	if (!moveCam) {
+		cam.setPosition(posCam);
+		cam.setTarget(ofVec3f(0, 150, 0));
+		posCam = ofVec3f(sin(angulo)*distCam, 165, cos(angulo) * distCam);
+	}
 
 	if (rota)
 		angulo += 0.005;
+
+	bMesh.update(analiza.bonePos);
 }
 
 //--------------------------------------------------------------
@@ -395,17 +280,20 @@ void ofApp::draw() {
 		ofPopMatrix();
 	}
 
-	if (analiza.dibujaMesh) {
+	/*if (analiza.dibujaMesh) {
 		mesh.draw();
 		ofSetColor(0);
 		ofNoFill();
 		meshLines.draw();
 	}
-	
-	
+	*/
+
 	light.disable();
 	pointLight.disable();
 	ofDisableLighting();
+
+	/// de momento aca para no usar luces
+	bMesh.draw();
 
 	cam.end();
 	ofDisableDepthTest();
@@ -452,6 +340,15 @@ void ofApp::keyPressed(int key) {
 		break;
 	case 'g':
 		grid = !grid;
+		break;
+	case 'm':
+		moveCam = !moveCam;
+		if (moveCam) {
+			cam.enableMouseInput();
+		}
+		else {
+			cam.disableMouseInput();
+		}
 		break;
 	case 'G':
 		invierteGravedad = !invierteGravedad;

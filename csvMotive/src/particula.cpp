@@ -32,7 +32,7 @@ Particula::Particula(ofVec3f pos, float mass, bool invertGrav) {
 	velocidad = ofVec3f(ofRandom(-0.5, 0.5), 0, ofRandom(-0.5, 0.5));
 }
 Particula::Particula(ofVec3f pos, float mass, bool invertGrav, float g) {
-	valGrav = g;
+	valGrav = -g;
 	if (invertGrav) {
 		valGrav *= -1;
 	}

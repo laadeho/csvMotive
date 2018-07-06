@@ -6,6 +6,7 @@
 #include "ofxDatGui.h"
 #include "particula.h"
 #include "Analiza.h"
+#include "BuildMesh.h"
 
 class ofApp : public ofBaseApp {
 
@@ -21,9 +22,12 @@ public:
 	
 	void windowResized(int w, int h);
 
-	//Particula part;
+	/// PARTICULAS
 	Particula partConfig;
 	vector<Particula> parts;
+
+	/// BUILD MESH
+	BuildMesh bMesh;
 
 	bool invierteGravedad;
 	float gravedad = 9.8;
@@ -52,6 +56,7 @@ public:
 	float angulo;
 	bool fs = true;
 	bool rota;
+	bool moveCam;
 
 	ofTrueTypeFont myfont;
 

@@ -45,6 +45,7 @@ void ofApp::setup(){
 	light.setPosition(0, 200, 0);
 
 	pointLight.setPointLight();
+	pointLight.setPosition(500, 200, 500);
 
 	ofSetFrameRate(analiza.fpsFromFile);
 }
@@ -128,8 +129,12 @@ void ofApp::update() {
 
 	if (rota)
 		angulo += 0.005;
-
+	
+	//if (ofGetFrameNum() % 2 == 0) {
+		bMesh.addNodes(analiza.bonePos);
+	//}
 	bMesh.update(analiza.bonePos);
+
 }
 
 //--------------------------------------------------------------
@@ -288,12 +293,12 @@ void ofApp::draw() {
 	}
 	*/
 
+	/// de momento aca para no usar luces
+	bMesh.draw();
+
 	light.disable();
 	pointLight.disable();
 	ofDisableLighting();
-
-	/// de momento aca para no usar luces
-	bMesh.draw();
 
 	cam.end();
 	ofDisableDepthTest();

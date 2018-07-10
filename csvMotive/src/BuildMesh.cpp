@@ -18,11 +18,17 @@ void BuildMesh::setup(vector<ofVec3f> nodos) {
 		mesh.addVertex(nodoIndex[i]);
 		mesh.addColor(255);
 	}
-	for (int i = 0; i < nodoIndex.size() - 2; i += 3) {
+	/*for (int i = 0; i < nodoIndex.size() - 2; i += 3) {
 		mesh.addIndex(i);
 		mesh.addIndex(i + 1);
 		mesh.addIndex(i + 2);
-	}
+	}*/
+
+	//for (int i = 0; i < size()->indices; i++) {
+	//}
+	//masIndex(0);
+	//masIndex();
+
 	ofLogNotice(ofToString(mesh.getNumVertices()));
 	/*
 	path.moveTo(20, 20);
@@ -47,16 +53,65 @@ void BuildMesh::setup(vector<ofVec3f> nodos) {
 	m.translate(20, 20, 0);
 	*/
 }
+void BuildMesh::masIndex(int mInd) {
+	mesh.addIndex(15 + mInd);
+	mesh.addIndex(14 + mInd);
+	mesh.addIndex(13 + mInd);
+	mesh.addIndex(0 + mInd);
+	///
+	mesh.addIndex(18 + mInd);
+	mesh.addIndex(17 + mInd);
+	mesh.addIndex(16 + mInd);
+	mesh.addIndex(0 + mInd);
+	///
+	mesh.addIndex(0 + mInd);
+	mesh.addIndex(1 + mInd);
+	mesh.addIndex(2 + mInd);
+	mesh.addIndex(3 + mInd);
+	mesh.addIndex(4 + mInd);
+	///
+	mesh.addIndex(8 + mInd);
+	mesh.addIndex(7 + mInd);
+	mesh.addIndex(6 + mInd);
+	mesh.addIndex(5 + mInd);
+	mesh.addIndex(3 + mInd);
+	mesh.addIndex(9 + mInd);
+	mesh.addIndex(10 + mInd);
+	mesh.addIndex(11 + mInd);
+	mesh.addIndex(12 + mInd);
+}
+
+void BuildMesh::addNodes(vector<ofVec3f> nodos) {
+	vector<ofVec3f> temp = nodos;
+	masIndex(numNodo);
+
+	for (int i = 0; i < temp.size(); i++) {
+		mesh.addVertex(temp[i]);
+		mesh.addColor(ofColor(ofRandom(150,255), ofRandom(100,255)));
+	}
+	numNodo += nodoIndex.size();
+}
 
 void BuildMesh::update(vector<ofVec3f> nodos) {
-	nodoIndex = nodos;
+	//nodoIndex = nodos;
+	/*vector<ofVec3f> temp = nodos;
 
+	for (int i = 0; i < temp.size(); i++) {
+		mesh.addVertex(temp[i]);
+		mesh.addColor(ofRandom(255));
+	}
+	masIndex();*/
+
+	/*
 	for (int i = 0; i < mesh.getNumVertices(); i++) {
 		ofVec3f vert = mesh.getVertex(i);
 		vert = nodoIndex[i];
-
+		
+		//mesh.addVertex(nodoIndex[i]);
+		//mesh.addColor(ofRandom(255));
 		mesh.setVertex(i, vert);
 	}
+	*/
 
 	//if (ofGetFrameNum() % 5 == 0) {
 		/*for (int i = 0; i < nodoIndex.size(); i++) {

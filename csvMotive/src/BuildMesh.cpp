@@ -4,10 +4,12 @@
 
 BuildMesh::BuildMesh(void) {
 	//vector<ofVec3f> nodoIndex;
+	mesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP_ADJACENCY);
+	meshWire.setMode(OF_PRIMITIVE_LINE_LOOP);
 }
 
 void BuildMesh::setup() {
-	mesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP_ADJACENCY);
+	
 	
 	//mesh.enableColors();
 	//mesh.enableIndices();
@@ -65,82 +67,69 @@ void BuildMesh::setup(vector<ofVec3f> nodos) {
 	ofLogNotice("Num Meshes: " + ofToString(meshes.size()));*/
 }
 
-void BuildMesh::masIndex(int mInd) {
-	mesh.addIndex(15 + mInd);
-	mesh.addIndex(14 + mInd);
-	mesh.addIndex(13 + mInd);
-	mesh.addIndex(0 + mInd);
+void BuildMesh::masIndex(ofMesh meshLoc, int mInd) {
+	meshLoc.addIndex(15 + mInd);
+	meshLoc.addIndex(14 + mInd);
+	meshLoc.addIndex(13 + mInd);
+	meshLoc.addIndex(0 + mInd);
 	///
-	mesh.addIndex(18 + mInd);
-	mesh.addIndex(17 + mInd);
-	mesh.addIndex(16 + mInd);
-	mesh.addIndex(0 + mInd);
+	meshLoc.addIndex(18 + mInd);
+	meshLoc.addIndex(17 + mInd);
+	meshLoc.addIndex(16 + mInd);
+	meshLoc.addIndex(0 + mInd);
 	///
-	mesh.addIndex(0 + mInd);
-	mesh.addIndex(1 + mInd);
-	mesh.addIndex(2 + mInd);
-	mesh.addIndex(3 + mInd);
-	mesh.addIndex(4 + mInd);
+	meshLoc.addIndex(0 + mInd);
+	meshLoc.addIndex(1 + mInd);
+	meshLoc.addIndex(2 + mInd);
+	meshLoc.addIndex(3 + mInd);
+	meshLoc.addIndex(4 + mInd);
 	///
-	mesh.addIndex(8 + mInd);
-	mesh.addIndex(7 + mInd);
-	mesh.addIndex(6 + mInd);
-	mesh.addIndex(5 + mInd);
-	mesh.addIndex(3 + mInd);
-	mesh.addIndex(9 + mInd);
-	mesh.addIndex(10 + mInd);
-	mesh.addIndex(11 + mInd);
-	mesh.addIndex(12 + mInd);
+	meshLoc.addIndex(8 + mInd);
+	meshLoc.addIndex(7 + mInd);
+	meshLoc.addIndex(6 + mInd);
+	meshLoc.addIndex(5 + mInd);
+	meshLoc.addIndex(3 + mInd);
+	meshLoc.addIndex(9 + mInd);
+	meshLoc.addIndex(10 + mInd);
+	meshLoc.addIndex(11 + mInd);
+	meshLoc.addIndex(12 + mInd);
 }
 
-void BuildMesh::addNodes(vector<ofVec3f> nodos) {
-	vector<ofVec3f> temp = nodos;
-	
-	if (tipo1) {
-		/*
-		if (ofGetFrameNum() < 5) {
-			mesh.clear();
-		}
-		*/
-		/*
-		if (mesh.getNumVertices() > 300)
-			mesh.removeIndex(300);
-			*/
-		for (int i = 0; i < temp.size(); i++) {
+void BuildMesh::addNodes(vector<ofVec3f> nodos, bool addN) {
+	if (addN) {
+		vector<ofVec3f> temp = nodos;
+		ofVec3f ceros = ofPoint(0, 0, 0);
+
+		masIndex(mesh, numNodo);
+		masIndex(meshWire, numNodo);
+
+		for (int i = 0; i < temp.size()-5; i++) {
+			if (abs(ofDist(temp[i].x, temp[i].y, temp[i].z, ceros.x, ceros.y, ceros.z)) > 0) {}
 			mesh.addVertex(temp[i]);
-			mesh.addColor(ofColor(150, 100));
+			mesh.addColor(ofColor(255));
+
+			meshWire.addVertex(temp[i]);
 		}
-		masIndex(numNodo);
-
-		numNodo += nodoIndex.size();
+		numNodo += temp.size();
 	}
-	else if (tipo2) {
-		//masIndex(numNodo);
+	//masIndex(numNodo);
 
-		//for (int i = 0; i < meshes.size(); i++) {
-		/*for (int i = 0; i < 3; i++) {
-			meshes[i].addVertex(temp[i]);
-			meshes[i].addVertex(temp[i+1]);
-		}*/
-		/*
-		meshes[0].addVertex(temp[0]);
-		meshes[0].addVertex(temp[1]);
-			
-		meshes[0].addIndex(0);
-		meshes[0].addIndex(1);
-		*/
-		//numNodo += nodoIndex.size();
-		
-	}
+	//for (int i = 0; i < meshes.size(); i++) {
+	/*for (int i = 0; i < 3; i++) {
+		meshes[i].addVertex(temp[i]);
+		meshes[i].addVertex(temp[i+1]);
+	}*/
+	/*
+	meshes[0].addVertex(temp[0]);
+	meshes[0].addVertex(temp[1]);
+
+	meshes[0].addIndex(0);
+	meshes[0].addIndex(1);
+	*/
+	//numNodo += nodoIndex.size();
 }
 
 void BuildMesh::update(vector<ofVec3f> nodos) {
-	if (tipo1) {
-
-	}
-	else if (tipo2) {
-
-	}
 	
 	//nodoIndex = nodos;
 	/*vector<ofVec3f> temp = nodos;
@@ -177,11 +166,18 @@ void BuildMesh::update(vector<ofVec3f> nodos) {
 }
 
 void BuildMesh::draw() {
+	ofPushStyle();
 	ofSetColor(255);
 	ofFill();
 
-	mesh.draw();
+	//mesh.draw();
+	ofPopStyle();
 
+	ofPushStyle();
+	ofSetColor(150);
+	ofNoFill();	
+	meshWire.draw();
+	ofPopStyle();
 	//path.draw();
 	//tessellation.drawWireframe();
 

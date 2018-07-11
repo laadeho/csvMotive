@@ -26,8 +26,10 @@ void ofApp::setup(){
 		meshLines.addVertex(vertice);
 		float val = ofRandom(1);
 		//mesh.addColor(ofFloatColor(val, val, val, ofRandom(1)));
-		mesh.addColor(ofFloatColor(val, val, val,ofRandom(1)));
+		//mesh.addColor(ofFloatColor(val, val, val,ofRandom(1)));
+		mesh.addColor(ofColor(255));
 		offsets.push_back(ofVec3f(ofRandom(0, 100000), ofRandom(0, 100000), ofRandom(0, 100000)));
+		/// Revisar el tamaño de esta variable "offsets"
 	}
 	
 	for (int i = 0; i < analiza.markerPos.size() - 2; i += 3) {
@@ -39,8 +41,9 @@ void ofApp::setup(){
 		//meshLines.addIndex(i + 2);
 	}
 	
-	bMesh.setup();
+	//bMesh.setup();
 	//bMeshes.setup(analiza.bonePos);
+	
 	/// CAMARA
 	cam.disableMouseInput();
 
@@ -125,6 +128,9 @@ void ofApp::update() {
 		strm << "fps: " << ofGetFrameRate();
 		ofSetWindowTitle(strm.str());
 	}
+	else {
+		ofSetWindowTitle("LAAd & MOCAP");
+	}
 
 	analiza.update();
 	updateMesh();	
@@ -144,13 +150,17 @@ void ofApp::update() {
 
 	if (rota)
 		angulo += 0.005;
-	if (ofGetFrameNum() > 5) {
-		if (ofGetFrameNum() % 20 == 0) {
-			bMesh.addNodes(analiza.bonePos);
-		}
-	}
 
-	
+	bool addNodes;
+	if (analiza.lineaAnalisis < analiza.linea.size() && analiza.anima) {
+		addNodes = true;
+	}
+	else {
+		addNodes = false;
+	}
+	if (ofGetFrameNum() > 5) {
+		bMesh.addNodes(analiza.bonePos, addNodes);
+	}
 	//bMesh.update(analiza.bonePos);
 
 }
@@ -302,17 +312,17 @@ void ofApp::draw() {
 		ofDrawGridPlane(100, 10, false);
 		ofPopMatrix();
 	}
-	/*
+	
 	if (analiza.dibujaMesh) {
 		mesh.draw();
 		ofSetColor(0);
 		ofNoFill();
 		meshLines.draw();
 	}
-	*/
+	
 
 	/// de momento aca para no usar luces
-	//bMesh.draw();
+	bMesh.draw();
 	
 	/// SHADOW CAST
 	//glEnable(GL_DEPTH_TEST);
@@ -331,19 +341,19 @@ void ofApp::draw() {
 	ofSetColor(255);
 	ofFill();
 	ofDrawBox(ofPoint(0, -10, 0), 1000, 5, 1000);
-	if(bMesh.tipo1)
-		bMesh.draw();
+		
+	bMesh.draw();
 
 	/// shadow
 	simple_shadow.begin();
 	
-	if (bMesh.tipo1)
-		bMesh.draw();
+	bMesh.draw();
 
 	for (int i = 0; i < parts.size(); i++) {
 		parts[i].draw();
 	}
-	ofDrawBox(0, 150, 50, 30);
+	if(debug)
+		ofDrawBox(0, 150, 50, 30);
 	simple_shadow.end();
 	//glDisable(GL_DEPTH_TEST);
 
@@ -374,16 +384,16 @@ void ofApp::draw() {
 void ofApp::keyPressed(int key) {
 	switch (key) {
 	case '1':
-		cam.dolly(-150);
+		bMesh.meshWire.setMode(OF_PRIMITIVE_LINE_LOOP);
 		break;
 	case '2':
-		cam.dolly(150);
+		bMesh.meshWire.setMode(OF_PRIMITIVE_LINES);
 		break;
 	case '3':
-		cam.boom(-150);
+		bMesh.meshWire.setMode(OF_PRIMITIVE_LINE_STRIP_ADJACENCY);
 		break;
 	case '4':
-		cam.boom(150);
+		bMesh.meshWire.setMode(OF_PRIMITIVE_LINES_ADJACENCY);
 		break;
 	case 'r':
 		rota = !rota;

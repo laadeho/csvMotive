@@ -33,9 +33,7 @@ public:
 
 	/// ANALIZA DATOS
 	Analiza analiza;
-	//void updateVal();
 
-	//void analizaCSV();
 	/// BUILD MESH
 	BuildMesh bMesh;
 	//BuildMesh bMeshes;

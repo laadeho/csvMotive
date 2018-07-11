@@ -5,6 +5,7 @@
 class BuildMesh {
 public:
 	BuildMesh();
+	void setup();
 	void setup(vector<ofVec3f> nodos);
 	void update(vector<ofVec3f> nodos);
 	void draw();
@@ -15,11 +16,15 @@ public:
 	vector<ofVec3f> nodoIndex;
 	int numNodo;
 	ofMesh mesh;
+
+	vector<ofMesh> meshes;
 	
 	ofPath path;
 	ofVboMesh tessellation;
 	ofMatrix4x4 m;
 
+	bool tipo1 = true;
+	bool tipo2 = false;
 	//int indices[19] = {};
 
 private:

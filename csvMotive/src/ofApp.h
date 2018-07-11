@@ -31,18 +31,19 @@ public:
 	Particula partConfig;
 	vector<Particula> parts;
 
+	/// ANALIZA DATOS
+	Analiza analiza;
+	//void updateVal();
+
+	//void analizaCSV();
 	/// BUILD MESH
 	BuildMesh bMesh;
+	//BuildMesh bMeshes;
 
 	bool invierteGravedad;
 	float gravedad = 9.8;
 	
 	bool borra = true; // no se para que se esta usando actualmente
-
-	/// ANALIZA DATOS
-	Analiza analiza;
-	//void updateVal();
-	//void analizaCSV();
 
 	/// GUI
 	void setupGUI();

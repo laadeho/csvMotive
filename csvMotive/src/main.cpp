@@ -15,7 +15,8 @@ int main( ){
 	ofAppGlutWindow window;
 
 	window.setGlutDisplayString("rgb double depth>=32 alpha");
-	ofSetupOpenGL(&window, 1280, 720, OF_WINDOW);
+//	window.setGlutDisplayString("rgb double depth>=32 alpha samples>=4");
+	ofSetupOpenGL(&window, 1280, 720, OF_FULLSCREEN);
 	ofRunApp(new ofApp());
 
 }

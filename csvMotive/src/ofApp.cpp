@@ -3,7 +3,7 @@ int tiempo = 0;
 //--------------------------------------------------------------
 void ofApp::setup(){
 	partConfig = Particula();
-
+	ofEnableSmoothing();
 	/// SIMPLE SHADOW
 	simple_shadow.setup(&cam);
 	
@@ -39,7 +39,8 @@ void ofApp::setup(){
 		//meshLines.addIndex(i + 2);
 	}
 	
-	bMesh.setup(analiza.bonePos);
+	bMesh.setup();
+	//bMeshes.setup(analiza.bonePos);
 	/// CAMARA
 	cam.disableMouseInput();
 
@@ -100,11 +101,6 @@ bool checkVive(Particula &p) {
 //--------------------------------------------------------------
 void ofApp::update() {
 	/// MAPPED SHADOW
-	ofSetWindowTitle(ofToString(ofGetFrameRate()));
-
-
-
-
 	float alpha = ofMap(ofGetMouseX(), 0, ofGetWidth(), 0.0, 1.0);
 	simple_shadow.setShadowColor(ofFloatColor(0., 0., 0., alpha));
 
@@ -113,7 +109,7 @@ void ofApp::update() {
 	float light_moving_radius = 50.;
 	light_pos = ofVec3f(sin(2.0 * PI * (ofGetElapsedTimef()*light_moving_speed)) * light_moving_radius, 250, 200);
 	simple_shadow.setLightPosition(light_pos);
-
+	///
 
 	for (int i = 0; i < parts.size(); i++) {
 		parts[i].update();
@@ -148,11 +144,14 @@ void ofApp::update() {
 
 	if (rota)
 		angulo += 0.005;
+	if (ofGetFrameNum() > 5) {
+		if (ofGetFrameNum() % 20 == 0) {
+			bMesh.addNodes(analiza.bonePos);
+		}
+	}
+
 	
-	//if (ofGetFrameNum() % 2 == 0) {
-		bMesh.addNodes(analiza.bonePos);
-	//}
-	bMesh.update(analiza.bonePos);
+	//bMesh.update(analiza.bonePos);
 
 }
 
@@ -312,42 +311,41 @@ void ofApp::draw() {
 	}
 	*/
 
-
 	/// de momento aca para no usar luces
 	//bMesh.draw();
 	
 	/// SHADOW CAST
-
-	glEnable(GL_DEPTH_TEST);
-
+	//glEnable(GL_DEPTH_TEST);
 	// axis
-	ofDrawAxis(300);
+	if (debug) {
+		ofDrawAxis(300);
+		// light pos
+		ofSetColor(255, 0, 255);
+		ofDrawBox(light_pos, 3);
+		ofDrawBitmapString("light", light_pos + 10);
+		// red box
+		ofSetColor(255, 0, 0);
+		ofDrawBox(0, 150, 50, 30);
+	}
 
+	ofSetColor(255);
+	ofFill();
 	ofDrawBox(ofPoint(0, -10, 0), 1000, 5, 1000);
-	// light pos
-	ofSetColor(255, 0, 255);
-	ofDrawBox(light_pos, 3);
-	ofDrawBitmapString("light", light_pos + 10);
+	if(bMesh.tipo1)
+		bMesh.draw();
 
-
-	// red box
-	ofSetColor(255, 0, 0);
-	ofDrawBox(0, 150, 50, 30);
-
-	bMesh.draw();
-
-	// shadow
+	/// shadow
 	simple_shadow.begin();
-	bMesh.draw();
+	
+	if (bMesh.tipo1)
+		bMesh.draw();
 
 	for (int i = 0; i < parts.size(); i++) {
 		parts[i].draw();
 	}
-	
 	ofDrawBox(0, 150, 50, 30);
 	simple_shadow.end();
-
-	glDisable(GL_DEPTH_TEST);
+	//glDisable(GL_DEPTH_TEST);
 
 	///
 

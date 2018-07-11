@@ -4,20 +4,18 @@
 
 BuildMesh::BuildMesh(void) {
 	//vector<ofVec3f> nodoIndex;
-
 }
 
-void BuildMesh::setup(vector<ofVec3f> nodos) {
-	nodoIndex = nodos;
+void BuildMesh::setup() {
 	mesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP_ADJACENCY);
 	
 	//mesh.enableColors();
 	//mesh.enableIndices();
 
-	for (int i = 0; i < nodoIndex.size(); i++) {
+	/*for (int i = 0; i < nodoIndex.size(); i++) {
 		mesh.addVertex(nodoIndex[i]);
 		mesh.addColor(255);
-	}
+	}*/
 	/*for (int i = 0; i < nodoIndex.size() - 2; i += 3) {
 		mesh.addIndex(i);
 		mesh.addIndex(i + 1);
@@ -29,7 +27,6 @@ void BuildMesh::setup(vector<ofVec3f> nodos) {
 	//masIndex(0);
 	//masIndex();
 
-	ofLogNotice(ofToString(mesh.getNumVertices()));
 	/*
 	path.moveTo(20, 20);
 	path.lineTo(40, 20);
@@ -53,6 +50,21 @@ void BuildMesh::setup(vector<ofVec3f> nodos) {
 	m.translate(20, 20, 0);
 	*/
 }
+
+void BuildMesh::setup(vector<ofVec3f> nodos) {
+	/*vector<ofVec3f> temp = nodos;
+	
+	for (int i = 0; i < nodos.size()-1; i++) {
+		ofMesh tempMesh;
+		meshes.push_back(ofMesh(tempMesh));
+	}
+	for (int i = 0; i < meshes.size(); i++) {
+		meshes[i].setMode(OF_PRIMITIVE_TRIANGLE_STRIP_ADJACENCY);
+	}
+
+	ofLogNotice("Num Meshes: " + ofToString(meshes.size()));*/
+}
+
 void BuildMesh::masIndex(int mInd) {
 	mesh.addIndex(15 + mInd);
 	mesh.addIndex(14 + mInd);
@@ -83,16 +95,53 @@ void BuildMesh::masIndex(int mInd) {
 
 void BuildMesh::addNodes(vector<ofVec3f> nodos) {
 	vector<ofVec3f> temp = nodos;
-	masIndex(numNodo);
+	
+	if (tipo1) {
+		/*
+		if (ofGetFrameNum() < 5) {
+			mesh.clear();
+		}
+		*/
+		/*
+		if (mesh.getNumVertices() > 300)
+			mesh.removeIndex(300);
+			*/
+		for (int i = 0; i < temp.size(); i++) {
+			mesh.addVertex(temp[i]);
+			mesh.addColor(ofColor(150, 100));
+		}
+		masIndex(numNodo);
 
-	for (int i = 0; i < temp.size(); i++) {
-		mesh.addVertex(temp[i]);
-		mesh.addColor(ofColor(ofRandom(150,255), ofRandom(100,255)));
+		numNodo += nodoIndex.size();
 	}
-	numNodo += nodoIndex.size();
+	else if (tipo2) {
+		//masIndex(numNodo);
+
+		//for (int i = 0; i < meshes.size(); i++) {
+		/*for (int i = 0; i < 3; i++) {
+			meshes[i].addVertex(temp[i]);
+			meshes[i].addVertex(temp[i+1]);
+		}*/
+		/*
+		meshes[0].addVertex(temp[0]);
+		meshes[0].addVertex(temp[1]);
+			
+		meshes[0].addIndex(0);
+		meshes[0].addIndex(1);
+		*/
+		//numNodo += nodoIndex.size();
+		
+	}
 }
 
 void BuildMesh::update(vector<ofVec3f> nodos) {
+	if (tipo1) {
+
+	}
+	else if (tipo2) {
+
+	}
+	
 	//nodoIndex = nodos;
 	/*vector<ofVec3f> temp = nodos;
 
@@ -130,7 +179,9 @@ void BuildMesh::update(vector<ofVec3f> nodos) {
 void BuildMesh::draw() {
 	ofSetColor(255);
 	ofFill();
+
 	mesh.draw();
+
 	//path.draw();
 	//tessellation.drawWireframe();
 

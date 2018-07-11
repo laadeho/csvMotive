@@ -4,6 +4,9 @@ int tiempo = 0;
 void ofApp::setup(){
 	partConfig = Particula();
 
+	/// SIMPLE SHADOW
+	simple_shadow.setup(&cam);
+	
 	setupGUI();
 	//ofSetFrameRate(120);
 	ofSetVerticalSync(true);
@@ -96,6 +99,22 @@ bool checkVive(Particula &p) {
 
 //--------------------------------------------------------------
 void ofApp::update() {
+	/// MAPPED SHADOW
+	ofSetWindowTitle(ofToString(ofGetFrameRate()));
+
+
+
+
+	float alpha = ofMap(ofGetMouseX(), 0, ofGetWidth(), 0.0, 1.0);
+	simple_shadow.setShadowColor(ofFloatColor(0., 0., 0., alpha));
+
+	// updating light position
+	float light_moving_speed = 0.1;
+	float light_moving_radius = 50.;
+	light_pos = ofVec3f(sin(2.0 * PI * (ofGetElapsedTimef()*light_moving_speed)) * light_moving_radius, 250, 200);
+	simple_shadow.setLightPosition(light_pos);
+
+
 	for (int i = 0; i < parts.size(); i++) {
 		parts[i].update();
 		//parts[i].applyForce(ofVec3f(0, 0.1, 0));
@@ -161,7 +180,6 @@ void ofApp::updateMesh() {
 //--------------------------------------------------------------
 
 void ofApp::draw() {
-	
 	ofBackground(0);
 
 	ofEnableDepthTest();
@@ -170,6 +188,7 @@ void ofApp::draw() {
 	pointLight.enable();
 
 	light.enable();
+	
 	cam.begin();
 
 	if (analiza.dibujaMarker) {
@@ -284,8 +303,8 @@ void ofApp::draw() {
 		ofDrawGridPlane(100, 10, false);
 		ofPopMatrix();
 	}
-
-	/*if (analiza.dibujaMesh) {
+	/*
+	if (analiza.dibujaMesh) {
 		mesh.draw();
 		ofSetColor(0);
 		ofNoFill();
@@ -293,16 +312,53 @@ void ofApp::draw() {
 	}
 	*/
 
+
 	/// de momento aca para no usar luces
+	//bMesh.draw();
+	
+	/// SHADOW CAST
+
+	glEnable(GL_DEPTH_TEST);
+
+	// axis
+	ofDrawAxis(300);
+
+	ofDrawBox(ofPoint(0, -10, 0), 1000, 5, 1000);
+	// light pos
+	ofSetColor(255, 0, 255);
+	ofDrawBox(light_pos, 3);
+	ofDrawBitmapString("light", light_pos + 10);
+
+
+	// red box
+	ofSetColor(255, 0, 0);
+	ofDrawBox(0, 150, 50, 30);
+
 	bMesh.draw();
 
+	// shadow
+	simple_shadow.begin();
+	bMesh.draw();
+
+	for (int i = 0; i < parts.size(); i++) {
+		parts[i].draw();
+	}
+	
+	ofDrawBox(0, 150, 50, 30);
+	simple_shadow.end();
+
+	glDisable(GL_DEPTH_TEST);
+
+	///
+
+	
 	light.disable();
 	pointLight.disable();
 	ofDisableLighting();
+	
 
 	cam.end();
 	ofDisableDepthTest();
-
 		
 	if (debug) {
 		ofSetColor(255);

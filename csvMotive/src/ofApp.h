@@ -8,8 +8,9 @@
 #include "Analiza.h"
 #include "BuildMesh.h"
 
-class ofApp : public ofBaseApp {
+#include "ofxShadow.h"
 
+class ofApp : public ofBaseApp {
 public:
 	void setup();
 	void update();
@@ -21,6 +22,10 @@ public:
 	void mouseMoved(int x, int y);
 	
 	void windowResized(int w, int h);
+
+	/// SIMPLE SHADOW
+	ofxShadow simple_shadow;
+	ofVec3f light_pos;
 
 	/// PARTICULAS
 	Particula partConfig;

@@ -41,7 +41,7 @@ void ofApp::setup(){
 		//meshLines.addIndex(i + 2);
 	}
 	
-	//bMesh.setup();
+	bMesh.setup();
 	//bMeshes.setup(analiza.bonePos);
 	
 	/// CAMARA
@@ -161,8 +161,10 @@ void ofApp::update() {
 	if (ofGetFrameNum() > 5) {
 		bMesh.addNodes(analiza.bonePos, addNodes);
 	}
-	//bMesh.update(analiza.bonePos);
 
+	bMeshes.addNodesMult(analiza.bonePos, addNodes);
+
+	//bMesh.update(analiza.bonePos);
 }
 
 //--------------------------------------------------------------
@@ -323,9 +325,10 @@ void ofApp::draw() {
 
 	/// de momento aca para no usar luces
 	bMesh.draw();
+	bMeshes.drawMeshes();
 	
 	/// SHADOW CAST
-	//glEnable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_TEST);
 	// axis
 	if (debug) {
 		ofDrawAxis(300);
@@ -355,11 +358,10 @@ void ofApp::draw() {
 	if(debug)
 		ofDrawBox(0, 150, 50, 30);
 	simple_shadow.end();
-	//glDisable(GL_DEPTH_TEST);
+	glDisable(GL_DEPTH_TEST);
 
 	///
 
-	
 	light.disable();
 	pointLight.disable();
 	ofDisableLighting();
@@ -394,6 +396,15 @@ void ofApp::keyPressed(int key) {
 		break;
 	case '4':
 		bMesh.meshWire.setMode(OF_PRIMITIVE_LINES_ADJACENCY);
+		break;
+	case '5':
+		bMesh.meshWire.setMode(OF_PRIMITIVE_PATCHES);
+		break;
+	case '6':
+		bMesh.meshWire.setMode(OF_PRIMITIVE_POINTS);
+		break;
+	case '7':
+		bMesh.meshWire.setMode(OF_PRIMITIVE_TRIANGLE_STRIP_ADJACENCY);
 		break;
 	case 'r':
 		rota = !rota;
@@ -449,12 +460,10 @@ void ofApp::mouseMoved(int x, int y) {
 	//}
 }
 
-
 //--------------------------------------------------------------
 void ofApp::windowResized(int w, int h) {
 
 }
-
 ///////////////// GUI 
 /// ==== EVENTOS ===================================
 void ofApp::onToggleEvent(ofxDatGuiToggleEvent e)
@@ -470,9 +479,11 @@ void ofApp::onToggleEvent(ofxDatGuiToggleEvent e)
 	if (e.target->is("RIGID")) analiza.dibujaRigid = !analiza.dibujaRigid;
 	if (e.target->is("BONE")) analiza.dibujaBone = !analiza.dibujaBone;
 }
+//--------------------------------------------------------------
 void ofApp::onDropdownEvent(ofxDatGuiDropdownEvent e)
 {
 }
+//--------------------------------------------------------------
 void ofApp::onSliderEvent(ofxDatGuiSliderEvent e)
 {
 	if (e.target->is("DIST CAM")) distCam = e.value;

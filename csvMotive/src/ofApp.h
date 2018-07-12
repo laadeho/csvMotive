@@ -36,7 +36,7 @@ public:
 
 	/// BUILD MESH
 	BuildMesh bMesh;
-	//BuildMesh bMeshes;
+	BuildMesh bMeshes;
 
 	bool invierteGravedad;
 	float gravedad = 9.8;

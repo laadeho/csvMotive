@@ -13,12 +13,18 @@ int main( ){
 	ofRunApp(new ofApp());
 	*/
 
-	
 	ofAppGlutWindow window;
 
 	window.setGlutDisplayString("rgb double depth>=32 alpha");
+
 	//window.setGlutDisplayString("rgba double samples>=4"); // no f
 	//window.setGlutDisplayString("rgb double depth>=32 alpha samples>=4"); // no f
-	ofSetupOpenGL(&window, 1280, 720, OF_FULLSCREEN);
+	//window.setGlutDisplayString("rgba double samples>=4 depth>=32");  
+	ofSetupOpenGL(&window, 3840, 2400, OF_FULLSCREEN);
 	ofRunApp(new ofApp());
 }
+/*
+Probablemente sea necesario dibujar en un vbo
+con mayor resolucion y comprimirlo, para acceder 
+a una mejor resolucion
+*/

@@ -25,6 +25,9 @@
     <ClCompile Include="src\BuildMesh.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\of_v0.9.8_vs_release\addons\ofxShadow\src\ofxShadow.cpp">
+      <Filter>addons\ofxShadow</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
@@ -53,6 +56,9 @@
     </Filter>
     <Filter Include="addons\ofxDatGui\src\themes">
       <UniqueIdentifier>{859c41f1-ed54-45c9-8796-a2a81997eb41}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="addons\ofxShadow">
+      <UniqueIdentifier>{e4c7fc9f-3ccd-43dd-90c9-28ec1e971f27}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -130,6 +136,9 @@
     </ClInclude>
     <ClInclude Include="src\BuildMesh.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\of_v0.9.8_vs_release\addons\ofxShadow\src\ofxShadow.h">
+      <Filter>addons\ofxShadow</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -4,20 +4,28 @@
 
 BuildMesh::BuildMesh(void) {
 	//vector<ofVec3f> nodoIndex;
+	mesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP_ADJACENCY);
+	meshWire.setMode(OF_PRIMITIVE_LINE_LOOP);
 
+	ofMesh meshTemp;
+
+	meshes.push_back(meshTemp);
 }
 
-void BuildMesh::setup(vector<ofVec3f> nodos) {
-	nodoIndex = nodos;
-	mesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP_ADJACENCY);
+void BuildMesh::setup() {
+	/*
+	ofMesh meshTemp;
+	meshes.push_back(meshTemp);
+	*/
 	
+	ofLogNotice("Meshes Size: "+ofToString(meshes.size()));
 	//mesh.enableColors();
 	//mesh.enableIndices();
 
-	for (int i = 0; i < nodoIndex.size(); i++) {
+	/*for (int i = 0; i < nodoIndex.size(); i++) {
 		mesh.addVertex(nodoIndex[i]);
 		mesh.addColor(255);
-	}
+	}*/
 	/*for (int i = 0; i < nodoIndex.size() - 2; i += 3) {
 		mesh.addIndex(i);
 		mesh.addIndex(i + 1);
@@ -29,7 +37,6 @@ void BuildMesh::setup(vector<ofVec3f> nodos) {
 	//masIndex(0);
 	//masIndex();
 
-	ofLogNotice(ofToString(mesh.getNumVertices()));
 	/*
 	path.moveTo(20, 20);
 	path.lineTo(40, 20);
@@ -53,46 +60,128 @@ void BuildMesh::setup(vector<ofVec3f> nodos) {
 	m.translate(20, 20, 0);
 	*/
 }
-void BuildMesh::masIndex(int mInd) {
-	mesh.addIndex(15 + mInd);
-	mesh.addIndex(14 + mInd);
-	mesh.addIndex(13 + mInd);
-	mesh.addIndex(0 + mInd);
-	///
-	mesh.addIndex(18 + mInd);
-	mesh.addIndex(17 + mInd);
-	mesh.addIndex(16 + mInd);
-	mesh.addIndex(0 + mInd);
-	///
-	mesh.addIndex(0 + mInd);
-	mesh.addIndex(1 + mInd);
-	mesh.addIndex(2 + mInd);
-	mesh.addIndex(3 + mInd);
-	mesh.addIndex(4 + mInd);
-	///
-	mesh.addIndex(8 + mInd);
-	mesh.addIndex(7 + mInd);
-	mesh.addIndex(6 + mInd);
-	mesh.addIndex(5 + mInd);
-	mesh.addIndex(3 + mInd);
-	mesh.addIndex(9 + mInd);
-	mesh.addIndex(10 + mInd);
-	mesh.addIndex(11 + mInd);
-	mesh.addIndex(12 + mInd);
+
+void BuildMesh::setup(vector<ofVec3f> nodos) {
+	/*vector<ofVec3f> temp = nodos;
+	
+	for (int i = 0; i < nodos.size()-1; i++) {
+		ofMesh tempMesh;
+		meshes.push_back(ofMesh(tempMesh));
+	}
+	for (int i = 0; i < meshes.size(); i++) {
+		meshes[i].setMode(OF_PRIMITIVE_TRIANGLE_STRIP_ADJACENCY);
+	}
+
+	ofLogNotice("Num Meshes: " + ofToString(meshes.size()));*/
 }
 
-void BuildMesh::addNodes(vector<ofVec3f> nodos) {
-	vector<ofVec3f> temp = nodos;
-	masIndex(numNodo);
+void BuildMesh::masIndex(ofMesh meshLoc, int mInd) {
+	meshLoc.addIndex(15 + mInd);
+	meshLoc.addIndex(14 + mInd);
+	meshLoc.addIndex(13 + mInd);
+	meshLoc.addIndex(0 + mInd);
+	///
+	meshLoc.addIndex(18 + mInd);
+	meshLoc.addIndex(17 + mInd);
+	meshLoc.addIndex(16 + mInd);
+	meshLoc.addIndex(0 + mInd);
+	///
+	meshLoc.addIndex(0 + mInd);
+	meshLoc.addIndex(1 + mInd);
+	meshLoc.addIndex(2 + mInd);
+	meshLoc.addIndex(3 + mInd);
+	meshLoc.addIndex(4 + mInd);
+	///
+	meshLoc.addIndex(8 + mInd);
+	meshLoc.addIndex(7 + mInd);
+	meshLoc.addIndex(6 + mInd);
+	meshLoc.addIndex(5 + mInd);
+	meshLoc.addIndex(3 + mInd);
+	meshLoc.addIndex(9 + mInd);
+	meshLoc.addIndex(10 + mInd);
+	meshLoc.addIndex(11 + mInd);
+	meshLoc.addIndex(12 + mInd);
+}
 
-	for (int i = 0; i < temp.size(); i++) {
-		mesh.addVertex(temp[i]);
-		mesh.addColor(ofColor(ofRandom(150,255), ofRandom(100,255)));
+void BuildMesh::addNodes(vector<ofVec3f> nodos, bool addN) {
+	if (addN) {
+		vector<ofVec3f> temp = nodos;
+		ofVec3f ceros = ofPoint(0, 0, 0);
+
+		masIndex(mesh, numNodo);
+		masIndex(meshWire, numNodo);
+
+		for (int i = 0; i < temp.size() - 2; i++) {
+			if (abs(ofDist(temp[i].x, temp[i].y, temp[i].z, ceros.x, ceros.y, ceros.z)) > 0) {}
+			mesh.addVertex(temp[i]);
+			mesh.addColor(ofColor(255));
+
+			meshWire.addVertex(temp[i]);
+		}
+		numNodo += temp.size();
 	}
-	numNodo += nodoIndex.size();
+	//masIndex(numNodo);
+
+	//for (int i = 0; i < meshes.size(); i++) {
+	/*for (int i = 0; i < 3; i++) {
+	meshes[i].addVertex(temp[i]);
+	meshes[i].addVertex(temp[i+1]);
+	}*/
+	/*
+	meshes[0].addVertex(temp[0]);
+	meshes[0].addVertex(temp[1]);
+
+	meshes[0].addIndex(0);
+	meshes[0].addIndex(1);
+	*/
+	//numNodo += nodoIndex.size();
+}
+
+void BuildMesh::addNodesMult(vector<ofVec3f> nodos, bool addN) {
+	if (addN) {
+		
+		vector<ofVec3f> temp = nodos;
+		ofVec3f ceros = ofPoint(0, 0, 0);
+		
+		/*
+		masIndex(mesh, numNodo);
+		masIndex(meshWire, numNodo);
+		*/
+		for (int i = 0; i < 10; i++) {
+			meshes[0].addVertex(ofVec3f(ofPoint(ofRandom(100), ofRandom(100), ofRandom(100))));
+			meshes[0].addIndex(i+numNodo);
+		}
+		/*
+		for (int i = 0; i < temp.size() - 2; i++) {
+			if (abs(ofDist(temp[i].x, temp[i].y, temp[i].z, ceros.x, ceros.y, ceros.z)) > 0) {}
+			mesh.addVertex(temp[i]);
+			mesh.addColor(ofColor(255));
+
+			meshWire.addVertex(temp[i]);
+		}
+		*/
+
+		numNodo += temp.size();
+	}
+	//masIndex(numNodo);
+
+	//for (int i = 0; i < meshes.size(); i++) {
+	/*for (int i = 0; i < 3; i++) {
+	meshes[i].addVertex(temp[i]);
+	meshes[i].addVertex(temp[i+1]);
+	}*/
+	/*
+	meshes[0].addVertex(temp[0]);
+	meshes[0].addVertex(temp[1]);
+
+	meshes[0].addIndex(0);
+	meshes[0].addIndex(1);
+	*/
+	//numNodo += nodoIndex.size();
 }
 
 void BuildMesh::update(vector<ofVec3f> nodos) {
+	
 	//nodoIndex = nodos;
 	/*vector<ofVec3f> temp = nodos;
 
@@ -128,9 +217,21 @@ void BuildMesh::update(vector<ofVec3f> nodos) {
 }
 
 void BuildMesh::draw() {
+	// https://openframeworks.cc/ofBook/chapters/advanced_graphics.html
+
+	ofPushStyle();
 	ofSetColor(255);
 	ofFill();
+
 	mesh.draw();
+	ofPopStyle();
+
+	ofPushStyle();
+	ofSetColor(150);
+	ofNoFill();
+	meshWire.draw();
+	ofPopStyle();
+
 	//path.draw();
 	//tessellation.drawWireframe();
 
@@ -138,7 +239,43 @@ void BuildMesh::draw() {
 	ofMultMatrix(m);
 	path.draw();
 	*/
+
+	//for (nodoIndex : nodoIndex.size()++) {
+	/*
+	for (int i=0;i<nodoIndex.size(); i++){
+	ofDrawCircle(nodoIndex[i], 1);
+	}
+	*/
+}
+void BuildMesh::drawMeshes() {
 	// https://openframeworks.cc/ofBook/chapters/advanced_graphics.html
+	
+	ofPushStyle();
+	ofSetColor(255);
+	ofFill();
+
+	mesh.draw();
+	ofPopStyle();
+	
+	ofPushStyle();
+	ofSetColor(150);
+	ofNoFill();
+
+	for (int i = 0; i < meshes.size(); i++) {
+		meshes[i].draw();
+	}
+
+	meshWire.draw();
+
+	ofPopStyle();
+		
+	//path.draw();
+	//tessellation.drawWireframe();
+
+	/*
+	ofMultMatrix(m);
+	path.draw();
+	*/
 
 	//for (nodoIndex : nodoIndex.size()++) {
 	/*

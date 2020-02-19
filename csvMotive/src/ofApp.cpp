@@ -3,7 +3,10 @@ int tiempo = 0;
 //--------------------------------------------------------------
 void ofApp::setup(){
 	partConfig = Particula();
-
+	ofEnableSmoothing();
+	/// SIMPLE SHADOW
+	simple_shadow.setup(&cam);
+	
 	setupGUI();
 	//ofSetFrameRate(120);
 	ofSetVerticalSync(true);
@@ -23,8 +26,10 @@ void ofApp::setup(){
 		meshLines.addVertex(vertice);
 		float val = ofRandom(1);
 		//mesh.addColor(ofFloatColor(val, val, val, ofRandom(1)));
-		mesh.addColor(ofFloatColor(val, val, val,ofRandom(1)));
+		//mesh.addColor(ofFloatColor(val, val, val,ofRandom(1)));
+		mesh.addColor(ofColor(255));
 		offsets.push_back(ofVec3f(ofRandom(0, 100000), ofRandom(0, 100000), ofRandom(0, 100000)));
+		/// Revisar el tamaño de esta variable "offsets"
 	}
 	
 	for (int i = 0; i < analiza.markerPos.size() - 2; i += 3) {
@@ -36,7 +41,9 @@ void ofApp::setup(){
 		//meshLines.addIndex(i + 2);
 	}
 	
-	bMesh.setup(analiza.bonePos);
+	bMesh.setup();
+	//bMeshes.setup(analiza.bonePos);
+	
 	/// CAMARA
 	cam.disableMouseInput();
 
@@ -96,6 +103,17 @@ bool checkVive(Particula &p) {
 
 //--------------------------------------------------------------
 void ofApp::update() {
+	/// MAPPED SHADOW
+	float alpha = ofMap(ofGetMouseX(), 0, ofGetWidth(), 0.0, 1.0);
+	simple_shadow.setShadowColor(ofFloatColor(0., 0., 0., alpha));
+
+	// updating light position
+	float light_moving_speed = 0.1;
+	float light_moving_radius = 50.;
+	light_pos = ofVec3f(sin(2.0 * PI * (ofGetElapsedTimef()*light_moving_speed)) * light_moving_radius, 250, 200);
+	simple_shadow.setLightPosition(light_pos);
+	///
+
 	for (int i = 0; i < parts.size(); i++) {
 		parts[i].update();
 		//parts[i].applyForce(ofVec3f(0, 0.1, 0));
@@ -109,6 +127,9 @@ void ofApp::update() {
 		std::stringstream strm;
 		strm << "fps: " << ofGetFrameRate();
 		ofSetWindowTitle(strm.str());
+	}
+	else {
+		ofSetWindowTitle("LAAd & MOCAP");
 	}
 
 	analiza.update();
@@ -129,12 +150,21 @@ void ofApp::update() {
 
 	if (rota)
 		angulo += 0.005;
-	
-	//if (ofGetFrameNum() % 2 == 0) {
-		bMesh.addNodes(analiza.bonePos);
-	//}
-	bMesh.update(analiza.bonePos);
 
+	bool addNodes;
+	if (analiza.lineaAnalisis < analiza.linea.size() && analiza.anima) {
+		addNodes = true;
+	}
+	else {
+		addNodes = false;
+	}
+	if (ofGetFrameNum() > 5) {
+		bMesh.addNodes(analiza.bonePos, addNodes);
+	}
+
+	bMeshes.addNodesMult(analiza.bonePos, addNodes);
+
+	//bMesh.update(analiza.bonePos);
 }
 
 //--------------------------------------------------------------
@@ -161,7 +191,6 @@ void ofApp::updateMesh() {
 //--------------------------------------------------------------
 
 void ofApp::draw() {
-	
 	ofBackground(0);
 
 	ofEnableDepthTest();
@@ -170,6 +199,7 @@ void ofApp::draw() {
 	pointLight.enable();
 
 	light.enable();
+	
 	cam.begin();
 
 	if (analiza.dibujaMarker) {
@@ -284,25 +314,61 @@ void ofApp::draw() {
 		ofDrawGridPlane(100, 10, false);
 		ofPopMatrix();
 	}
-
-	/*if (analiza.dibujaMesh) {
+	
+	if (analiza.dibujaMesh) {
 		mesh.draw();
 		ofSetColor(0);
 		ofNoFill();
 		meshLines.draw();
 	}
-	*/
+	
 
 	/// de momento aca para no usar luces
 	bMesh.draw();
+	bMeshes.drawMeshes();
+	
+	/// SHADOW CAST
+	glEnable(GL_DEPTH_TEST);
+	// axis
+	if (debug) {
+		ofDrawAxis(300);
+		// light pos
+		ofSetColor(255, 0, 255);
+		ofDrawBox(light_pos, 3);
+		ofDrawBitmapString("light", light_pos + 10);
+		// red box
+		ofSetColor(255, 0, 0);
+		ofDrawBox(0, 150, 50, 30);
+	}
+
+	ofSetColor(255);
+	ofFill();
+	ofDrawBox(ofPoint(0, -10, 0), 1000, 5, 1000);
+		
+	bMesh.draw();
+
+	/// shadow
+	simple_shadow.begin();
+	
+	bMesh.draw();
+
+	for (int i = 0; i < parts.size(); i++) {
+		parts[i].draw();
+	}
+	if(debug)
+		ofDrawBox(0, 150, 50, 30);
+	simple_shadow.end();
+	glDisable(GL_DEPTH_TEST);
+
+	///
 
 	light.disable();
 	pointLight.disable();
 	ofDisableLighting();
+	
 
 	cam.end();
 	ofDisableDepthTest();
-
 		
 	if (debug) {
 		ofSetColor(255);
@@ -320,16 +386,25 @@ void ofApp::draw() {
 void ofApp::keyPressed(int key) {
 	switch (key) {
 	case '1':
-		cam.dolly(-150);
+		bMesh.meshWire.setMode(OF_PRIMITIVE_LINE_LOOP);
 		break;
 	case '2':
-		cam.dolly(150);
+		bMesh.meshWire.setMode(OF_PRIMITIVE_LINES);
 		break;
 	case '3':
-		cam.boom(-150);
+		bMesh.meshWire.setMode(OF_PRIMITIVE_LINE_STRIP_ADJACENCY);
 		break;
 	case '4':
-		cam.boom(150);
+		bMesh.meshWire.setMode(OF_PRIMITIVE_LINES_ADJACENCY);
+		break;
+	case '5':
+		bMesh.meshWire.setMode(OF_PRIMITIVE_PATCHES);
+		break;
+	case '6':
+		bMesh.meshWire.setMode(OF_PRIMITIVE_POINTS);
+		break;
+	case '7':
+		bMesh.meshWire.setMode(OF_PRIMITIVE_TRIANGLE_STRIP_ADJACENCY);
 		break;
 	case 'r':
 		rota = !rota;
@@ -385,12 +460,10 @@ void ofApp::mouseMoved(int x, int y) {
 	//}
 }
 
-
 //--------------------------------------------------------------
 void ofApp::windowResized(int w, int h) {
 
 }
-
 ///////////////// GUI 
 /// ==== EVENTOS ===================================
 void ofApp::onToggleEvent(ofxDatGuiToggleEvent e)
@@ -406,9 +479,11 @@ void ofApp::onToggleEvent(ofxDatGuiToggleEvent e)
 	if (e.target->is("RIGID")) analiza.dibujaRigid = !analiza.dibujaRigid;
 	if (e.target->is("BONE")) analiza.dibujaBone = !analiza.dibujaBone;
 }
+//--------------------------------------------------------------
 void ofApp::onDropdownEvent(ofxDatGuiDropdownEvent e)
 {
 }
+//--------------------------------------------------------------
 void ofApp::onSliderEvent(ofxDatGuiSliderEvent e)
 {
 	if (e.target->is("DIST CAM")) distCam = e.value;

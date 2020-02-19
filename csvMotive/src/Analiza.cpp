@@ -500,7 +500,6 @@ void Analiza::update() {
 	//ofLogNotice("Pos: " + ofToString(bonePos[0]) + ", Rot: " + ofToString(boneRot[0]));
 }
 
-
 void Analiza::draw() {
 	
 }

@@ -8,8 +8,9 @@
 #include "Analiza.h"
 #include "BuildMesh.h"
 
-class ofApp : public ofBaseApp {
+#include "ofxShadow.h"
 
+class ofApp : public ofBaseApp {
 public:
 	void setup();
 	void update();
@@ -22,22 +23,25 @@ public:
 	
 	void windowResized(int w, int h);
 
+	/// SIMPLE SHADOW
+	ofxShadow simple_shadow;
+	ofVec3f light_pos;
+
 	/// PARTICULAS
 	Particula partConfig;
 	vector<Particula> parts;
 
+	/// ANALIZA DATOS
+	Analiza analiza;
+
 	/// BUILD MESH
 	BuildMesh bMesh;
+	BuildMesh bMeshes;
 
 	bool invierteGravedad;
 	float gravedad = 9.8;
 	
 	bool borra = true; // no se para que se esta usando actualmente
-
-	/// ANALIZA DATOS
-	Analiza analiza;
-	//void updateVal();
-	//void analizaCSV();
 
 	/// GUI
 	void setupGUI();
